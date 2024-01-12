@@ -24,7 +24,7 @@ def clean_text(text):
     # Remove punctuation
     # text = re.sub(r'[^\w\s]', '', text)
     
-    text = re.sub(r'this \[post\] \(was originally published on \[this site\]\(', '', text)
+    text = re.sub(r'^.*\b(this|post|published|site)\b.*$\n?', '', text, flags=re.MULTILINE)
     
     text = re.sub(r'\r\n\r\n', '', text)
     return text
@@ -43,14 +43,14 @@ labels = df['category_level_1']
 # Apply the function to the 'content' column
 texts = texts.apply(clean_text)
 
-print(texts[10915])
+print(texts)
 exit()
 
 # Tokenize the texts
 tokenizer = Tokenizer(num_words=10000, oov_token='<OOV>')
 tokenizer.fit_on_texts(texts)
 sequences = tokenizer.texts_to_sequences(texts)
-print(sequences[0])
+# print(sequences[0])
 
 # Pad the sequences
 padded_sequences = pad_sequences(sequences, maxlen=200)
