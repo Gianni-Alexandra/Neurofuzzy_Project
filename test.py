@@ -10,6 +10,25 @@ from keras.callbacks import TensorBoard
 from keras.callbacks import EarlyStopping
 import datetime
 
+import re
+
+def clean_text(text):
+    text = text.lower()
+    
+    # Remove URLs
+    text = re.sub(r'http\S+|www.\S+', '', text)
+    
+    # Remove email addresses
+    text = re.sub(r'\S+@\S+', '', text)
+    
+    # Remove punctuation
+    # text = re.sub(r'[^\w\s]', '', text)
+    
+    text = re.sub(r'this \[post\] \(was originally published on \[this site\]\(', '', text)
+    
+    text = re.sub(r'\r\n\r\n', '', text)
+    return text
+
 early_stopping = EarlyStopping(monitor='val_loss', patience=5, min_delta=0.0001)
 
 log_dir = "logs/fit/" + datetime.datetime.now().strftime("%Y%m%d-%H%M%S")
@@ -21,7 +40,10 @@ df = pd.read_csv(CSV_FILE)
 texts = df['content']
 labels = df['category_level_1']
 
-print(texts)
+# Apply the function to the 'content' column
+texts = texts.apply(clean_text)
+
+print(texts[10915])
 exit()
 
 # Tokenize the texts
