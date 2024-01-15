@@ -13,21 +13,21 @@ import datetime
 import re
 
 def clean_text(text):
-    text = text.lower()
-    
-    # Remove URLs
-    text = re.sub(r'http\S+|www.\S+', '', text)
-    
-    # Remove email addresses
-    text = re.sub(r'\S+@\S+', '', text)
-    
-    # Remove punctuation
-    # text = re.sub(r'[^\w\s]', '', text)
-    
-    text = re.sub(r'^.*\b(this|post|published|site)\b.*$\n?', '', text, flags=re.MULTILINE)
-    
-    text = re.sub(r'\r\n\r\n', '', text)
-    return text
+	text = text.lower()
+	
+	# Remove URLs
+	text = re.sub(r'http\S+|www.\S+', '', text)
+	
+	# Remove email addresses
+	text = re.sub(r'\S+@\S+', '', text)
+	
+	# Remove punctuation
+	# text = re.sub(r'[^\w\s]', '', text)
+	
+	text = re.sub(r'^.*\b(this|post|published|site)\b.*$\n?', '', text, flags=re.MULTILINE)
+	
+	text = re.sub(r'\r\n\r\n', '', text)
+	return text
 
 early_stopping = EarlyStopping(monitor='val_loss', patience=5, min_delta=0.0001)
 
@@ -43,8 +43,8 @@ labels = df['category_level_1']
 # Apply the function to the 'content' column
 texts = texts.apply(clean_text)
 
-print(texts)
-exit()
+# print(texts)
+# exit()
 
 # Tokenize the texts
 tokenizer = Tokenizer(num_words=10000, oov_token='<OOV>')
@@ -55,11 +55,11 @@ sequences = tokenizer.texts_to_sequences(texts)
 # Pad the sequences
 padded_sequences = pad_sequences(sequences, maxlen=200)
 model = tf.keras.Sequential([
-    tf.keras.layers.Embedding(10000, 16, input_length=200),
-    tf.keras.layers.GlobalAveragePooling1D(),
-    tf.keras.layers.Dense(300, activation='relu'),
-    tf.keras.layers.Dropout(0.5),
-    tf.keras.layers.Dense(len(labels.unique()), activation='softmax')  # Adjust the number of neurons to match the number of unique labels
+	tf.keras.layers.Embedding(10000, 16, input_length=200),
+	tf.keras.layers.GlobalAveragePooling1D(),
+	tf.keras.layers.Dense(300, activation='relu'),
+	tf.keras.layers.Dropout(0.5),
+	tf.keras.layers.Dense(len(labels.unique()), activation='softmax')  # Adjust the number of neurons to match the number of unique labels
 ])
 
 model.compile(loss='sparse_categorical_crossentropy', optimizer='adam', metrics=['accuracy'])
