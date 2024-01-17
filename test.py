@@ -44,17 +44,17 @@ texts = texts.apply(clean_text)
 # exit()
 
 # Tokenize the texts
-tokenizer = Tokenizer(num_words=10000, oov_token='<OOV>')
+tokenizer = Tokenizer(num_words=3, oov_token='<OOV>')
 tokenizer.fit_on_texts(texts)
 sequences = tokenizer.texts_to_sequences(texts)
 # print(sequences[0])
 
 # Pad the sequences
-padded_sequences = pad_sequences(sequences, maxlen=200)
+padded_sequences = pad_sequences(sequences, maxlen=20)
 model = tf.keras.Sequential([
-	tf.keras.layers.Embedding(10000, 16, input_length=200),
+	tf.keras.layers.Embedding(10000, 16, input_length=20),
 	tf.keras.layers.GlobalAveragePooling1D(),
-	tf.keras.layers.Dense(300, activation='relu'),
+	tf.keras.layers.Dense(64, activation='relu'),
 	# tf.keras.layers.Dropout(0.5),
 	tf.keras.layers.Dense(len(labels.unique()), activation='softmax')  # Adjust the number of neurons to match the number of unique labels
 ])

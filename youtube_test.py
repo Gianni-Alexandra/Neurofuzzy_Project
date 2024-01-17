@@ -38,49 +38,43 @@ def get_unique_num(sentiment, list_of_sentiment):
 
 ## Read our CSV_file
 train_data= pd.read_csv(CSV_FILE)
-# print(train_data)
 train_data['Num_words_text'] = train_data['content'].apply(lambda x:len(str(x).split())) 
 mask = train_data['Num_words_text'] >2
+
 train_data = train_data[mask]
-print('-------Train data--------')
+
 unique_word_list = train_data['category_level_1'].value_counts()
-# print(unique_word_list)
-# print(unique_word_list.index[16])
-# print(len(train_data))
-print('-------------------------')
+
 max_train_sentence_length  = train_data['Num_words_text'].max()
 
+# Clean our text
 train_data['content'] = train_data['content'].apply(clean_text)
 
+# Generate unieque number for each category_level_1
 train_data['label'] = train_data.apply(lambda row: get_unique_num(row['category_level_1'], unique_word_list.index), axis=1)
 
-feautures = ['content']
 X = train_data['content'].tolist()
 Y = train_data['label'].tolist()
 
-train_data.head(10)
-# test_data.head(10)
-
+# Split our data into train and validation
 X_train, X_valid, Y_train, Y_valid= train_test_split(X,\
                                                     Y,\
                                                       test_size=0.2,\
                                                       stratify = Y,\
                                                       random_state=0)
 
-
-
 train_dat =list(zip(Y_train,X_train))
-#print(train_dat[0])
 valid_dat =list(zip(Y_valid,X_valid))
 
 import torch
 from torch.utils.data import DataLoader
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
+# Generate vocabulary
 from torchtext.data.utils import get_tokenizer
 from torchtext.vocab import build_vocab_from_iterator
 
-tokenizer = get_tokenizer('basic_english')
+tokenizer = get_tokenizer('basic_english') # May need to change tokenizer
 train_iter = train_dat
 def yield_tokens(data_iter):
     for _, text in data_iter:
