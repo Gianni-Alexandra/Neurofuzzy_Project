@@ -94,10 +94,9 @@ train_data['label'] = train_data.apply(lambda row: get_unique_num(row['category_
 # print('Train Max Sentence Length :'+str(max_train_sentence_length))
 # print('Test Max Sentence Length :'+str(max_test_sentence_length))
 feautures = ['content']
-X = train_data.loc[:,feautures]
-#  print(X)
-Y = train_data.loc[:,['label']]
-# print(Y)
+X = train_data['content'].tolist()
+
+Y = train_data['label'].tolist()
 
 
 train_data.head(10)
