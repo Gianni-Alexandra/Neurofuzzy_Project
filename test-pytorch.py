@@ -1,6 +1,7 @@
 import re
-import torch
+import torch as nn
 import pandas as pd
+from torchtext.vocab import build_vocab_from_iterator
 from torchtext.data import get_tokenizer
 import nltk
 
@@ -24,12 +25,14 @@ data = pd.read_csv(CSV_FILE)
 
 data_for_pytorch = []
 
+tokenizer = get_tokenizer('basic_english')
+
 # Wrapper that translates the files to be PyTorch-friendly
 for i in range(len(data)):
 	temp_str = clean_text(data['content'][i])
-	data_for_pytorch.append((data['category_level_1'][i], data['category_level_2'][i], temp_str))
+	tokens = tokenizer(temp_str)
+	data_for_pytorch.append((data['category_level_1'][i], data['category_level_2'][i], tokens))
 
-print(data_for_pytorch[int(len(data)/2)])
+# print(data_for_pytorch[int(len(data)/2)])
 
-
-tokenizer = get_tokenizer('basic_english')
+vocab = build_vocab_from_iterator(data_for_pytorch)

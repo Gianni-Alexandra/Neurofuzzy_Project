@@ -12,6 +12,8 @@ import sklearn
 
 from sklearn.model_selection import train_test_split
 
+CSV_FILE = "news-classification.csv"
+
 def remove_emoji(text):
     emoji_pattern = re.compile("["
         u"\U0001F600-\U0001F64F"  # emoticons
@@ -39,35 +41,39 @@ def clean_text(text ):
     
     return text2.lower()
 
-def get_sentiment(sentiment):
-    if sentiment == 'positive':
-        return 2
-    elif sentiment == 'negative':
-        return 1
-    else:
-        return 0
-    
-train_data= pd.read_csv("C:\\TweetSenitment\\train.csv")
-train_data.dropna(axis = 0, how ='any',inplace=True) 
-train_data['Num_words_text'] = train_data['text'].apply(lambda x:len(str(x).split())) 
+def get_unique_num(sentiment, list_of_sentiment):
+    for i in range(len(list_of_sentiment)):
+        if sentiment == list_of_sentiment[i]:
+            return i
+    return -1
+
+
+train_data= pd.read_csv(CSV_FILE)
+print(train_data)
+train_data['Num_words_text'] = train_data['content'].apply(lambda x:len(str(x).split())) 
 mask = train_data['Num_words_text'] >2
 train_data = train_data[mask]
 print('-------Train data--------')
-print(train_data['sentiment'].value_counts())
-print(len(train_data))
+unique_word_list = train_data['category_level_1'].value_counts()
+print(unique_word_list)
+# print(unique_word_list.index[16])
+# print(len(train_data))
 print('-------------------------')
 max_train_sentence_length  = train_data['Num_words_text'].max()
 
 
-train_data['text'] = train_data['text'].apply(remove_emoji)
-train_data['text'] = train_data['text'].apply(remove_url)
-train_data['text'] = train_data['text'].apply(clean_text)
 
-train_data['label'] = train_data['sentiment'].apply(get_sentiment)
+train_data['content'] = train_data['content'].apply(remove_emoji)
+train_data['content'] = train_data['content'].apply(remove_url)
+train_data['content'] = train_data['content'].apply(clean_text)
 
-test_data= pd.read_csv("C:\\TweetSenitment\\test.csv")
-test_data.dropna(axis = 0, how ='any',inplace=True) 
-test_data['Num_words_text'] = test_data['text'].apply(lambda x:len(str(x).split())) 
+train_data['label'] = train_data.apply(lambda row: get_unique_num(row['category_level_1'], unique_word_list.index), axis=1)
+
+print(train_data['label'])
+
+test_data= pd.read_csv(CSV_FILE)
+# test_data.dropna(axis = 0, how ='any',inplace=True) 
+test_data['Num_words_text'] = test_data['content'].apply(lambda x:len(str(x).split())) 
 
 max_test_sentence_length  = test_data['Num_words_text'].max()
 
@@ -79,11 +85,12 @@ print(test_data['sentiment'].value_counts())
 print(len(test_data))
 print('-------------------------')
 
-test_data['text'] = test_data['text'].apply(remove_emoji)
-test_data['text'] = test_data['text'].apply(remove_url)
-test_data['text'] = test_data['text'].apply(clean_text)
+test_data['content'] = test_data['content'].apply(remove_emoji)
+test_data['content'] = test_data['content'].apply(remove_url)
+test_data['content'] = test_data['content'].apply(clean_text)
 
-test_data['label'] = test_data['sentiment'].apply(get_sentiment)
+train_data['label'] = train_data.apply(lambda row: get_unique_num(row['category_level_1'], unique_word_list.index), axis=1)
+# test_data['label'] = test_data['sentiment'].apply(get_sentiment)
 
 print('Train Max Sentence Length :'+str(max_train_sentence_length))
 print('Test Max Sentence Length :'+str(max_test_sentence_length))
@@ -91,7 +98,7 @@ print('Test Max Sentence Length :'+str(max_test_sentence_length))
 train_data.head(10)
 test_data.head(10)
 
-X_train, X_valid, Y_train, Y_valid= train_test_split(train_data['text'].tolist(),\
+X_train, X_valid, Y_train, Y_valid= train_test_split(train_data['content'].tolist(),\
                                                       train_data['label'].tolist(),\
                                                       test_size=0.2,\
                                                       stratify = train_data['label'].tolist(),\
@@ -105,13 +112,13 @@ print('Class distribution'+str(Counter(Y_train)))
 print('Valid data len:'+str(len(X_valid)))
 print('Class distribution'+ str(Counter(Y_valid)))
 
-print('Test data len:'+str(len(test_data['text'].tolist())))
+print('Test data len:'+str(len(test_data['content'].tolist())))
 print('Class distribution'+ str(Counter(test_data['label'].tolist())))
 
 
 train_dat =list(zip(Y_train,X_train))
 valid_dat =list(zip(Y_valid,X_valid))
-test_dat=list(zip(test_data['label'].tolist(),test_data['text'].tolist()))
+test_dat=list(zip(test_data['label'].tolist(),test_data['content'].tolist()))
 
 import torch
 from torch.utils.data import DataLoader

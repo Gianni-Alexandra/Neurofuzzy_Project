@@ -14,19 +14,16 @@ import re
 
 def clean_text(text):
 	text = text.lower()
-	
-	# Remove URLs
-	text = re.sub(r'http\S+|www.\S+', '', text)
-	
-	# Remove email addresses
-	text = re.sub(r'\S+@\S+', '', text)
-	
-	# Remove punctuation
-	# text = re.sub(r'[^\w\s]', '', text)
-	
-	text = re.sub(r'^.*\b(this|post|published|site)\b.*$\n?', '', text, flags=re.MULTILINE)
-	
-	text = re.sub(r'\r\n\r\n', '', text)
+	text = text.replace('\xa0', ' ') # Remove non-breaking spaces
+	text = re.sub(r'http\S+|www.\S+', '', text) # Remove URLs
+	text = re.sub(r'\S+@\S+', '', text) # Remove email addresses
+	text = re.sub(r'^.*\b(this|post|published|site)\b.*$\n?', '', text, flags=re.MULTILINE) # Remove lines like "This post was published on the site"
+	text = re.sub(r'\\(?!n|r)', '', text) # Remove anything but backslashes
+	text = text.replace('[\r \n]\n', ' ') # Remove newlines
+	text = re.sub(r'[\r\n]{2,}', ' ', text)
+	text = re.sub(r'from[: ]* ', '', text) # Remove "from" at the beginning of the text
+	text = re.sub(r'  ', ' ', text) # Remove double spaces
+	text = re.sub(r'\(photo by .*\)', '', text) # Remove lines like "(photo by reuters)"
 	return text
 
 early_stopping = EarlyStopping(monitor='val_loss', patience=5, min_delta=0.0001)
@@ -58,7 +55,7 @@ model = tf.keras.Sequential([
 	tf.keras.layers.Embedding(10000, 16, input_length=200),
 	tf.keras.layers.GlobalAveragePooling1D(),
 	tf.keras.layers.Dense(300, activation='relu'),
-	tf.keras.layers.Dropout(0.5),
+	# tf.keras.layers.Dropout(0.5),
 	tf.keras.layers.Dense(len(labels.unique()), activation='softmax')  # Adjust the number of neurons to match the number of unique labels
 ])
 
@@ -71,7 +68,7 @@ label_tokenizer.fit_on_texts(labels_list)
 training_label_seq = np.array([seq[0] for seq in label_tokenizer.texts_to_sequences(labels_list)]) - 1
 
 # Train the model
-model.fit(padded_sequences, training_label_seq, epochs=30, validation_split=0.2, callbacks=[tensorboard_callback, early_stopping])
+model.fit(padded_sequences, training_label_seq, epochs=30, validation_split=0.2, callbacks=[tensorboard_callback])
 
 # Evaluate the model
 loss, accuracy = model.evaluate(padded_sequences, training_label_seq)
