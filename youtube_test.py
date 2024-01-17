@@ -14,40 +14,29 @@ from sklearn.model_selection import train_test_split
 
 CSV_FILE = "news-classification.csv"
 
-def remove_emoji(text):
-    emoji_pattern = re.compile("["
-        u"\U0001F600-\U0001F64F"  # emoticons
-        u"\U0001F300-\U0001F5FF"  # symbols & pictographs
-        u"\U0001F680-\U0001F6FF"  # transport & map symbols
-        u"\U0001F1E0-\U0001F1FF"  # flags (iOS)
-        u"\U00002702-\U000027B0"
-        u"\U000024C2-\U0001F251"
-        "]+", flags=re.UNICODE)
-    return emoji_pattern.sub(r'', text)
+## Clean our text from unecessary characters etc
+def clean_text(text):
+	text = text.lower()
+	text = text.replace('\xa0', ' ') # Remove non-breaking spaces
+	text = re.sub(r'http\S+|www.\S+', '', text) # Remove URLs
+	text = re.sub(r'\S+@\S+', '', text) # Remove email addresses
+	text = re.sub(r'^.*\b(this|post|published|site)\b.*$\n?', '', text, flags=re.MULTILINE) # Remove lines like "This post was published on the site"
+	text = re.sub(r'\\(?!n|r)', '', text) # Remove anything but backslashes
+	text = text.replace('[\r \n]\n', ' ') # Remove newlines
+	text = re.sub(r'[\r\n]{2,}', ' ', text)
+	text = re.sub(r'from[: ]* ', '', text) # Remove "from" at the beginning of the text
+	text = re.sub(r'  ', ' ', text) # Remove double spaces
+	text = re.sub(r'\(photo by .*\)', '', text) # Remove lines like "(photo by reuters)"
+	return text
 
-def remove_url(text): 
-    url_pattern  = re.compile('http[s]?://(?:[a-zA-Z]|[0-9]|[$-_@.&+]|[!*\(\),]|(?:%[0-9a-fA-F][0-9a-fA-F]))+')
-    return url_pattern.sub(r'', text)
- # converting return value from list to string
-
-def clean_text(text ): 
-    delete_dict = {sp_character: '' for sp_character in string.punctuation} 
-    delete_dict[' '] = ' ' 
-    table = str.maketrans(delete_dict)
-    text1 = text.translate(table)
-    #print('cleaned:'+text1)
-    textArr= text1.split()
-    text2 = ' '.join([w for w in textArr if ( not w.isdigit() and  ( not w.isdigit() and len(w)>2))]) 
-    
-    return text2.lower()
-
+## Map category_level_1 label to numeric
 def get_unique_num(sentiment, list_of_sentiment):
     for i in range(len(list_of_sentiment)):
         if sentiment == list_of_sentiment[i]:
             return i
     return -1
 
-
+## Read our CSV_file
 train_data= pd.read_csv(CSV_FILE)
 # print(train_data)
 train_data['Num_words_text'] = train_data['content'].apply(lambda x:len(str(x).split())) 
@@ -61,43 +50,13 @@ unique_word_list = train_data['category_level_1'].value_counts()
 print('-------------------------')
 max_train_sentence_length  = train_data['Num_words_text'].max()
 
-
-train_data['content'] = train_data['content'].apply(remove_emoji)
-train_data['content'] = train_data['content'].apply(remove_url)
 train_data['content'] = train_data['content'].apply(clean_text)
 
 train_data['label'] = train_data.apply(lambda row: get_unique_num(row['category_level_1'], unique_word_list.index), axis=1)
 
-#print(train_data['label'])
-
-# test_data= pd.read_csv(CSV_FILE)
-#test_data.dropna(axis = 0, how ='any',inplace=True) 
-# test_data['Num_words_text'] = test_data['content'].apply(lambda x:len(str(x).split())) 
-# 
-# max_test_sentence_length  = test_data['Num_words_text'].max()
-# 
-# mask = test_data['Num_words_text'] >2
-# test_data = test_data[mask]
-# 
-# print('-------Test data--------')
-# print(test_data['sentiment'].value_counts())
-# print(len(test_data))
-# print('-------------------------')
-# 
-# test_data['content'] = test_data['content'].apply(remove_emoji)
-# test_data['content'] = test_data['content'].apply(remove_url)
-# test_data['content'] = test_data['content'].apply(clean_text)
-
-train_data['label'] = train_data.apply(lambda row: get_unique_num(row['category_level_1'], unique_word_list.index), axis=1)
-# test_data['label'] = test_data['sentiment'].apply(get_sentiment)
-
-# print('Train Max Sentence Length :'+str(max_train_sentence_length))
-# print('Test Max Sentence Length :'+str(max_test_sentence_length))
 feautures = ['content']
 X = train_data['content'].tolist()
-
 Y = train_data['label'].tolist()
-
 
 train_data.head(10)
 # test_data.head(10)
@@ -108,19 +67,11 @@ X_train, X_valid, Y_train, Y_valid= train_test_split(X,\
                                                       stratify = Y,\
                                                       random_state=0)
 
-#print(X_train)
-# print(Y_train)
-#print('Train data len:'+str(len(X_train)))
-# print('Class distribution'+str(Counter(Y_train)))
-
-
-# print('Valid data len:'+str(len(X_valid)))
-# print('Class distribution'+ str(Counter(Y_valid)))
 
 
 train_dat =list(zip(Y_train,X_train))
+#print(train_dat[0])
 valid_dat =list(zip(Y_valid,X_valid))
-
 
 import torch
 from torch.utils.data import DataLoader
@@ -140,9 +91,6 @@ vocab.set_default_index(vocab["<unk>"])
 
 text_pipeline = lambda x: vocab(tokenizer(x))
 label_pipeline = lambda x: int(x) 
-text_pipeline('here is the an example')
-
-#label_pipeline('1')
 
 def collate_batch(batch):
     label_list, text_list, offsets = [], [], [0]
@@ -167,7 +115,7 @@ class TextClassificationModel(nn.Module):
 
     def __init__(self, vocab_size, embed_dim, num_class):
         super(TextClassificationModel, self).__init__()
-        self.embedding = nn.EmbeddingBag(vocab_size, embed_dim, sparse=True)
+        self.embedding = nn.EmbeddingBag(vocab_size, embed_dim)
         self.fc1 = nn.Linear(embed_dim,64)
         self.fc2 = nn.Linear(64,16)
         self.fc3 = nn.Linear(16, num_class)
@@ -192,7 +140,7 @@ class TextClassificationModel(nn.Module):
     
 train_iter1 = train_dat
 num_class = len(set([label for (label, text) in train_iter1]))
-print(num_class)
+#print(num_class)
 vocab_size = len(vocab)
 emsize = 128
 model = TextClassificationModel(vocab_size, emsize, num_class).to(device)
