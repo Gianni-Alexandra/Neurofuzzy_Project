@@ -14,7 +14,7 @@ def clean_text(text):
 	text = re.sub(r'^.*\b(this|post|published|site)\b.*$\n?', '', text, flags=re.MULTILINE) # Remove lines like "This post was published on the site"
 	text = re.sub(r'\\(?!n|r)', '', text) # Remove anything but backslashes
 	text = text.replace('[\r \n]\n', ' ') # Remove newlines
-	text = re.sub(r'[\r \n]\n[\r \n]\n', ' ', text) # Remove double newlines
+	text = re.sub(r'[\r\n]{2,}', ' ', text)
 	text = re.sub(r'from[: ]* ', '', text) # Remove "from" at the beginning of the text
 	text = re.sub(r'  ', ' ', text) # Remove double spaces
 	text = re.sub(r'\(photo by .*\)', '', text) # Remove lines like "(photo by reuters)"
