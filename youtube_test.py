@@ -83,13 +83,13 @@ def yield_tokens(data_iter):
 vocab = build_vocab_from_iterator(yield_tokens(train_iter), specials=["<unk>"])
 vocab.set_default_index(vocab["<unk>"])
 
+# Create data pipeline
 text_pipeline = lambda x: vocab(tokenizer(x))
 label_pipeline = lambda x: int(x) 
 
 def collate_batch(batch):
     label_list, text_list, offsets = [], [], [0]
     for (_label, _text) in batch:
-        #  print(_label)
          label_list.append(label_pipeline(_label))
          processed_text = torch.tensor(text_pipeline(_text), dtype=torch.int64)
          text_list.append(processed_text)
@@ -98,9 +98,6 @@ def collate_batch(batch):
     offsets = torch.tensor(offsets[:-1]).cumsum(dim=0)
     text_list = torch.cat(text_list)
     return label_list.to(device), text_list.to(device), offsets.to(device)
-
-#train_iter =train_dat
-#dataloader = DataLoader(train_iter, batch_size=8, shuffle=False, collate_fn=collate_batch)
 
 from torch import nn
 import torch.nn.functional as F
@@ -134,7 +131,6 @@ class TextClassificationModel(nn.Module):
     
 train_iter1 = train_dat
 num_class = len(set([label for (label, text) in train_iter1]))
-#print(num_class)
 vocab_size = len(vocab)
 emsize = 128
 model = TextClassificationModel(vocab_size, emsize, num_class).to(device)
@@ -178,9 +174,10 @@ def evaluate(dataloader):
 
 from torch.utils.data.dataset import random_split
 from torchtext.data.functional import to_map_style_dataset
+
 # Hyperparameters
-EPOCHS = 10 # epoch
-LR =10  # learning rate
+EPOCHS = 20 # epoch
+LR = 10  # learning rate
 BATCH_SIZE = 16 # batch size for training
 
 criterion = torch.nn.CrossEntropyLoss()
@@ -217,7 +214,7 @@ for epoch in range(1, EPOCHS + 1):
                                            accu_val))
     print('-' * 59)
 
-    print('Checking the results of test dataset.')
+    # print('Checking the results of test dataset.')
 # accu_test = evaluate(test_dataloader)
 # print('test accuracy {:8.3f}'.format(accu_test))
 
