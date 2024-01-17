@@ -49,18 +49,17 @@ def get_unique_num(sentiment, list_of_sentiment):
 
 
 train_data= pd.read_csv(CSV_FILE)
-print(train_data)
+# print(train_data)
 train_data['Num_words_text'] = train_data['content'].apply(lambda x:len(str(x).split())) 
 mask = train_data['Num_words_text'] >2
 train_data = train_data[mask]
 print('-------Train data--------')
 unique_word_list = train_data['category_level_1'].value_counts()
-print(unique_word_list)
+# print(unique_word_list)
 # print(unique_word_list.index[16])
 # print(len(train_data))
 print('-------------------------')
 max_train_sentence_length  = train_data['Num_words_text'].max()
-
 
 
 train_data['content'] = train_data['content'].apply(remove_emoji)
@@ -69,56 +68,60 @@ train_data['content'] = train_data['content'].apply(clean_text)
 
 train_data['label'] = train_data.apply(lambda row: get_unique_num(row['category_level_1'], unique_word_list.index), axis=1)
 
-print(train_data['label'])
+#print(train_data['label'])
 
-test_data= pd.read_csv(CSV_FILE)
-# test_data.dropna(axis = 0, how ='any',inplace=True) 
-test_data['Num_words_text'] = test_data['content'].apply(lambda x:len(str(x).split())) 
-
-max_test_sentence_length  = test_data['Num_words_text'].max()
-
-mask = test_data['Num_words_text'] >2
-test_data = test_data[mask]
-
-print('-------Test data--------')
-print(test_data['sentiment'].value_counts())
-print(len(test_data))
-print('-------------------------')
-
-test_data['content'] = test_data['content'].apply(remove_emoji)
-test_data['content'] = test_data['content'].apply(remove_url)
-test_data['content'] = test_data['content'].apply(clean_text)
+# test_data= pd.read_csv(CSV_FILE)
+#test_data.dropna(axis = 0, how ='any',inplace=True) 
+# test_data['Num_words_text'] = test_data['content'].apply(lambda x:len(str(x).split())) 
+# 
+# max_test_sentence_length  = test_data['Num_words_text'].max()
+# 
+# mask = test_data['Num_words_text'] >2
+# test_data = test_data[mask]
+# 
+# print('-------Test data--------')
+# print(test_data['sentiment'].value_counts())
+# print(len(test_data))
+# print('-------------------------')
+# 
+# test_data['content'] = test_data['content'].apply(remove_emoji)
+# test_data['content'] = test_data['content'].apply(remove_url)
+# test_data['content'] = test_data['content'].apply(clean_text)
 
 train_data['label'] = train_data.apply(lambda row: get_unique_num(row['category_level_1'], unique_word_list.index), axis=1)
 # test_data['label'] = test_data['sentiment'].apply(get_sentiment)
 
-print('Train Max Sentence Length :'+str(max_train_sentence_length))
-print('Test Max Sentence Length :'+str(max_test_sentence_length))
+# print('Train Max Sentence Length :'+str(max_train_sentence_length))
+# print('Test Max Sentence Length :'+str(max_test_sentence_length))
+feautures = ['content']
+X = train_data.loc[:,feautures]
+#  print(X)
+Y = train_data.loc[:,['label']]
+# print(Y)
+
 
 train_data.head(10)
-test_data.head(10)
+# test_data.head(10)
 
-X_train, X_valid, Y_train, Y_valid= train_test_split(train_data['content'].tolist(),\
-                                                      train_data['label'].tolist(),\
+X_train, X_valid, Y_train, Y_valid= train_test_split(X,\
+                                                    Y,\
                                                       test_size=0.2,\
-                                                      stratify = train_data['label'].tolist(),\
+                                                      stratify = Y,\
                                                       random_state=0)
 
+#print(X_train)
+# print(Y_train)
+#print('Train data len:'+str(len(X_train)))
+# print('Class distribution'+str(Counter(Y_train)))
 
-print('Train data len:'+str(len(X_train)))
-print('Class distribution'+str(Counter(Y_train)))
 
-
-print('Valid data len:'+str(len(X_valid)))
-print('Class distribution'+ str(Counter(Y_valid)))
-
-print('Test data len:'+str(len(test_data['content'].tolist())))
-print('Class distribution'+ str(Counter(test_data['label'].tolist())))
+# print('Valid data len:'+str(len(X_valid)))
+# print('Class distribution'+ str(Counter(Y_valid)))
 
 
 train_dat =list(zip(Y_train,X_train))
 valid_dat =list(zip(Y_valid,X_valid))
-test_dat=list(zip(test_data['label'].tolist(),test_data['content'].tolist()))
+
 
 import torch
 from torch.utils.data import DataLoader
@@ -140,11 +143,12 @@ text_pipeline = lambda x: vocab(tokenizer(x))
 label_pipeline = lambda x: int(x) 
 text_pipeline('here is the an example')
 
-label_pipeline('1')
+#label_pipeline('1')
 
 def collate_batch(batch):
     label_list, text_list, offsets = [], [], [0]
     for (_label, _text) in batch:
+         print(_label)
          label_list.append(label_pipeline(_label))
          processed_text = torch.tensor(text_pipeline(_text), dtype=torch.int64)
          text_list.append(processed_text)
@@ -187,7 +191,7 @@ class TextClassificationModel(nn.Module):
         x = self.fc3(x)
         return x
     
-    train_iter1 = train_dat
+train_iter1 = train_dat
 num_class = len(set([label for (label, text) in train_iter1]))
 print(num_class)
 vocab_size = len(vocab)
@@ -244,7 +248,7 @@ scheduler = torch.optim.lr_scheduler.StepLR(optimizer, 1.0, gamma=0.1)
 total_accu = None
 
 train_iter2 = train_dat
-test_iter2 =test_dat 
+# test_iter2 =test_dat 
 valid_iter2= valid_dat
 
 
@@ -254,8 +258,8 @@ train_dataloader = DataLoader(train_iter2, batch_size=BATCH_SIZE,
                               shuffle=True, collate_fn=collate_batch)
 valid_dataloader = DataLoader(valid_iter2, batch_size=BATCH_SIZE,
                               shuffle=True, collate_fn=collate_batch)
-test_dataloader = DataLoader(test_iter2, batch_size=BATCH_SIZE,
-                             shuffle=True, collate_fn=collate_batch)
+# test_dataloader = DataLoader(test_iter2, batch_size=BATCH_SIZE,
+#                              shuffle=True, collate_fn=collate_batch)
 
 for epoch in range(1, EPOCHS + 1):
     epoch_start_time = time.time()
@@ -273,20 +277,20 @@ for epoch in range(1, EPOCHS + 1):
     print('-' * 59)
 
     print('Checking the results of test dataset.')
-accu_test = evaluate(test_dataloader)
-print('test accuracy {:8.3f}'.format(accu_test))
+# accu_test = evaluate(test_dataloader)
+# print('test accuracy {:8.3f}'.format(accu_test))
 
-sentiment_label = {2:"Positive",
-                   1: "Negative",
-                   0: "Neutral"
-                  }
+# sentiment_label = {2:"Positive",
+#                    1: "Negative",
+#                    0: "Neutral"
+#                   }
 
-def predict(text, text_pipeline):
-    with torch.no_grad():
-        text = torch.tensor(text_pipeline(text))
-        output = model(text, torch.tensor([0]))
-        return output.argmax(1).item() 
-ex_text_str = "soooooo wish i could, but im in school and myspace is completely blocked"
-model = model.to("cpu")
+# def predict(text, text_pipeline):
+#     with torch.no_grad():
+#         text = torch.tensor(text_pipeline(text))
+#         output = model(text, torch.tensor([0]))
+#         return output.argmax(1).item() 
+# ex_text_str = "soooooo wish i could, but im in school and myspace is completely blocked"
+# model = model.to("cpu")
 
-print("This is a %s tweet" %sentiment_label[predict(ex_text_str, text_pipeline)])
+# print("This is a %s tweet" %sentiment_label[predict(ex_text_str, text_pipeline)])
