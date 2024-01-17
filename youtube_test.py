@@ -147,7 +147,7 @@ text_pipeline('here is the an example')
 def collate_batch(batch):
     label_list, text_list, offsets = [], [], [0]
     for (_label, _text) in batch:
-         print(_label)
+        #  print(_label)
          label_list.append(label_pipeline(_label))
          processed_text = torch.tensor(text_pipeline(_text), dtype=torch.int64)
          text_list.append(processed_text)
