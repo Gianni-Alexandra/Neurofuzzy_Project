@@ -1,10 +1,8 @@
 import re
 import torch
 import pandas as pd
-import torch.nn as nn
-import torch.optim as optim
 from torchtext.data import get_tokenizer
-# from torchtext.vocab import build_vocab_from_iterator
+import nltk
 
 CSV_FILE = 'news-classification.csv'
 
