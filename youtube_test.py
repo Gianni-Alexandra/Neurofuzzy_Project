@@ -58,8 +58,8 @@ Y = train_data['label'].tolist()
 
 # Split our data into train and validation
 X_train, X_valid, Y_train, Y_valid= train_test_split(X,\
-                                                    Y,\
-                                                      test_size=0.2,\
+                                                     Y,\
+                                                     test_size=0.2,\
                                                       stratify = Y,\
                                                       random_state=0)
 
@@ -189,9 +189,6 @@ train_iter2 = train_dat
 # test_iter2 =test_dat 
 valid_iter2= valid_dat
 
-
-
-
 train_dataloader = DataLoader(train_iter2, batch_size=BATCH_SIZE,
                               shuffle=True, collate_fn=collate_batch)
 valid_dataloader = DataLoader(valid_iter2, batch_size=BATCH_SIZE,
@@ -214,7 +211,12 @@ for epoch in range(1, EPOCHS + 1):
                                            accu_val))
     print('-' * 59)
 
+<<<<<<< Updated upstream
     # print('Checking the results of test dataset.')
+=======
+    print('Checking the results of test dataset.')
+
+>>>>>>> Stashed changes
 # accu_test = evaluate(test_dataloader)
 # print('test accuracy {:8.3f}'.format(accu_test))
 
@@ -224,9 +226,9 @@ for epoch in range(1, EPOCHS + 1):
 #                   }
 
 # def predict(text, text_pipeline):
-#     with torch.no_grad():
-#         text = torch.tensor(text_pipeline(text))
-#         output = model(text, torch.tensor([0]))
+#     with torch.notorch.tensor(text_pipeline(text))
+#         outpu_grad():
+#         text = t = model(text, torch.tensor([0]))
 #         return output.argmax(1).item() 
 # ex_text_str = "soooooo wish i could, but im in school and myspace is completely blocked"
 # model = model.to("cpu")
