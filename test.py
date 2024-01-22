@@ -4,8 +4,10 @@ os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'
 import pandas as pd
 import numpy as np
 import tensorflow as tf
+from keras import layers
 from keras.preprocessing.text import Tokenizer
 from keras.preprocessing.sequence import pad_sequences
+from keras.layers import Dense, Embedding, GlobalAveragePooling1D
 from keras.callbacks import TensorBoard
 from keras.callbacks import EarlyStopping
 import datetime
@@ -26,6 +28,10 @@ def clean_text(text):
 	text = re.sub(r'\(photo by .*\)', '', text) # Remove lines like "(photo by reuters)"
 	return text
 
+def clean_text_tf(text):
+    lowercase = tf.strings.lower(text)
+    
+
 early_stopping = EarlyStopping(monitor='val_loss', patience=5, min_delta=0.0001)
 
 log_dir = "logs/fit/" + datetime.datetime.now().strftime("%Y%m%d-%H%M%S")
@@ -38,7 +44,12 @@ texts = df['content']
 labels = df['category_level_1']
 
 # Apply the function to the 'content' column
-texts = texts.apply(clean_text)
+# texts = texts.apply(clean_text)
+
+vectorize_layers = layers.TextVectorization(standardize=clean_text_tf, max_tokens=10000, output_mode='int', output_sequence_length=20)
+vectorize_layers.adapt(texts.tolist())
+print(vectorize_layers.get_vocabulary())
+exit()
 
 # print(texts)
 # exit()
@@ -51,15 +62,21 @@ sequences = tokenizer.texts_to_sequences(texts)
 
 # Pad the sequences
 padded_sequences = pad_sequences(sequences, maxlen=20)
-model = tf.keras.Sequential([
-	tf.keras.layers.Embedding(10000, 16, input_length=20),
-	tf.keras.layers.GlobalAveragePooling1D(),
-	tf.keras.layers.Dense(64, activation='relu'),
-	# tf.keras.layers.Dropout(0.5),
-	tf.keras.layers.Dense(len(labels.unique()), activation='softmax')  # Adjust the number of neurons to match the number of unique labels
-])
+# model = tf.keras.Sequential([
+# 	tf.keras.layers.Embedding(10000, 16, input_length=20),
+# 	tf.keras.layers.GlobalAveragePooling1D(),
+# 	tf.keras.layers.Dense(64, activation='relu'),
+# 	# tf.keras.layers.Dropout(0.5),
+# 	tf.keras.layers.Dense(len(labels.unique()), activation='softmax')  # Adjust the number of neurons to match the number of unique labels
+# ])
 
-model.compile(loss='sparse_categorical_crossentropy', optimizer='adam', metrics=['accuracy'])
+model = tf.keras.Sequential()
+model.add(Embedding(10000, 16, input_length=20))
+model.add(GlobalAveragePooling1D())
+model.add(Dense(64, activation='relu'))
+model.add(Dense(len(labels.unique()), activation='softmax'))
+
+model.compile(loss='MeanSquaredError', optimizer='adam', metrics=['accuracy'])
 
 # Convert labels to numeric
 label_tokenizer = Tokenizer()
