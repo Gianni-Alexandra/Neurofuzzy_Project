@@ -36,38 +36,48 @@ texts = texts.apply(clean_text)
 labels = pd.get_dummies(labels)
 
 # Split data into training and testing sets
-texts_train, texts_test, labels_train, labels_test = train_test_split(texts, labels, test_size=0.2)
+texts_train, texts_test, labels_train, labels_test = train_test_split(texts, labels, test_size=0.25)
 
 # Tokenize texts
 num_words = 20000
 tokenizer = Tokenizer(num_words=num_words, oov_token="<OOV>")
 tokenizer.fit_on_texts(texts_train)
 
+# Convert all texts to sequences
+all_sequences = tokenizer.texts_to_sequences(texts)
+# Get the length of the longest sequence
+max_sequence_length = max(len(sequence) for sequence in all_sequences)
+
 # Convert texts to sequences
 train_sequences = tokenizer.texts_to_sequences(texts_train)
 test_sequences = tokenizer.texts_to_sequences(texts_test)
 
 # Pad sequences
-max_length = 10000 # or any length you prefer
+max_length = max_sequence_length # Set the max length to the length of the longest sequence
 train_padded = pad_sequences(train_sequences, maxlen=max_length, padding='post', truncating='post')
 test_padded = pad_sequences(test_sequences, maxlen=max_length, padding='post', truncating='post')
 
 
 # Create a sequential model
-model = tf.keras.Sequential([
-    tf.keras.layers.Embedding(num_words, 16, input_length=max_length),
-    tf.keras.layers.GlobalAveragePooling1D(),
-    tf.keras.layers.Dense(24, activation='relu'),
-    # tf.keras.layers.Dense(1, activation='sigmoid')
-    tf.keras.layers.Dense(len(labels.nunique()), activation='softmax')
-])
+# model = tf.keras.Sequential([
+#     tf.keras.layers.Embedding(num_words, 16, input_length=max_length),
+#     tf.keras.layers.GlobalAveragePooling1D(),
+#     tf.keras.layers.Dense(24, activation='relu'),
+#     tf.keras.layers.Dense(len(labels.nunique()), activation='softmax')
+# ])
 
-optimizer = tf.keras.optimizers.Adam(learning_rate=0.01)
+model = tf.keras.Sequential()
+model.add(tf.keras.layers.Embedding(num_words, 16, input_length=max_length))
+model.add(tf.keras.layers.GlobalAveragePooling1D())
+model.add(tf.keras.layers.Dense(24, activation='relu'))
+model.add(tf.keras.layers.Dense(len(labels.nunique()), activation='softmax'))
+
+optimizer = tf.keras.optimizers.Adam(learning_rate=0.02)
 model.compile(loss='categorical_crossentropy', optimizer=optimizer, metrics=['accuracy'])
 
 
 num_epochs = 30
-model.fit(train_padded, labels_train, epochs=num_epochs, validation_data=(test_padded, labels_test))
+model.fit(train_padded, labels_train, epochs=num_epochs, validation_data=(test_padded, labels_test), batch_size=64)
 
 
 # Evaluate
