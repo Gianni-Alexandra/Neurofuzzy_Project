@@ -1,6 +1,7 @@
 import os
 os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'
 
+import numpy as np
 import tensorflow as tf
 import pandas as pd
 from sklearn.model_selection import train_test_split
@@ -38,7 +39,8 @@ labels = pd.get_dummies(labels)
 texts_train, texts_test, labels_train, labels_test = train_test_split(texts, labels, test_size=0.2)
 
 # Tokenize texts
-tokenizer = Tokenizer(num_words=10000, oov_token="<OOV>")
+num_words = 20000
+tokenizer = Tokenizer(num_words=num_words, oov_token="<OOV>")
 tokenizer.fit_on_texts(texts_train)
 
 # Convert texts to sequences
@@ -46,21 +48,22 @@ train_sequences = tokenizer.texts_to_sequences(texts_train)
 test_sequences = tokenizer.texts_to_sequences(texts_test)
 
 # Pad sequences
-max_length = 100 # or any length you prefer
+max_length = 10000 # or any length you prefer
 train_padded = pad_sequences(train_sequences, maxlen=max_length, padding='post', truncating='post')
 test_padded = pad_sequences(test_sequences, maxlen=max_length, padding='post', truncating='post')
 
 
 # Create a sequential model
 model = tf.keras.Sequential([
-    tf.keras.layers.Embedding(10000, 16, input_length=max_length),
+    tf.keras.layers.Embedding(num_words, 16, input_length=max_length),
     tf.keras.layers.GlobalAveragePooling1D(),
     tf.keras.layers.Dense(24, activation='relu'),
     # tf.keras.layers.Dense(1, activation='sigmoid')
     tf.keras.layers.Dense(len(labels.nunique()), activation='softmax')
 ])
 
-model.compile(loss='categorical_crossentropy', optimizer='adam', metrics=['accuracy'])
+optimizer = tf.keras.optimizers.Adam(learning_rate=0.01)
+model.compile(loss='categorical_crossentropy', optimizer=optimizer, metrics=['accuracy'])
 
 
 num_epochs = 30
@@ -73,4 +76,17 @@ print(f'Loss: {loss}, Accuracy: {accuracy}')
 
 # Predict
 predictions = model.predict(test_padded)
-print(predictions)
+
+# Convert the predictions from probabilities to class labels
+predicted_labels = np.argmax(predictions, axis=1)
+
+# Convert the one-hot encoded test labels back to class labels
+actual_labels = np.argmax(labels_test.to_numpy(), axis=1)
+
+# Create a DataFrame that contains the predicted and actual labels
+df = pd.DataFrame({
+    'Predicted': predicted_labels,
+    'Actual': actual_labels
+})
+
+print(df)
