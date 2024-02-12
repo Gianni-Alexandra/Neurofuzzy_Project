@@ -64,7 +64,7 @@ def preprocess_data(texts, labels, num_words = 20000, test_size = 0.2):
     tokenizer.fit_on_texts(train_texts)
     
     # Convert all texts to sequences
-    all_sequences = tokenizer.texts_to_sequences(df['content'])
+    all_sequences = tokenizer.texts_to_sequences(texts)
     
     # Get the length of the longest sequence
     max_sequence_length = max(len(sequence) for sequence in all_sequences)
@@ -80,8 +80,8 @@ def preprocess_data(texts, labels, num_words = 20000, test_size = 0.2):
 
     # Convert labels to one-hot encoding
     encoder = LabelEncoder()
-    encoder.fit(df['category_level_1'])
-    train_labels = to_categorical(encoder.transform(train_labels), num_classes=df['category_level_1'].nunique())
-    test_labels  = to_categorical(encoder.transform(test_labels), num_classes=df['category_level_1'].nunique())
+    encoder.fit(labels)
+    train_labels = to_categorical(encoder.transform(train_labels), num_classes=labels.nunique())
+    test_labels  = to_categorical(encoder.transform(test_labels), num_classes=labels.nunique())
 
     return train_padded, test_padded, train_labels, test_labels, tokenizer, max_length
