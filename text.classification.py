@@ -52,9 +52,6 @@ def import_text():
   labels = pd.get_dummies(labels)
   return texts, labels
 
-
-
-
 def preprocess_data(texts, labels, num_words = 20000, test_size = 0.2):
     # Split data into training and testing sets
     train_texts, test_texts, train_labels, test_labels = train_test_split(texts, labels, test_size=test_size)
@@ -85,3 +82,22 @@ def preprocess_data(texts, labels, num_words = 20000, test_size = 0.2):
     test_labels  = to_categorical(encoder.transform(test_labels), num_classes=labels.nunique())
 
     return train_padded, test_padded, train_labels, test_labels, tokenizer, max_length
+
+def train(model, train_texts, train_labels, test_texts, test_labels, epochs=30, batch_size=128):
+	early_stopping = EarlyStopping(monitor='val_loss', patience=12)
+	model.fit(train_texts, train_labels, validation_data=(test_texts, test_labels), epochs=epochs, batch_size=batch_size, callbacks=[early_stopping], use_multiprocessing=True)
+
+def evaluate_predict(model, test_texts, test_labels):
+	loss, accuracy = model.evaluate(test_texts, test_labels)
+	print(f'Loss: {loss}, Accuracy: {accuracy}')
+
+	predictions = model.predict(test_texts)
+
+	predicted_labels = np.argmax(predictions, axis=1)
+	actual_labels = np.argmax(test_labels, axis=1)
+	df = pd.DataFrame({
+		'Predicted': predicted_labels,
+		'Actual': actual_labels
+	})
+	print(df)
+
