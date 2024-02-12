@@ -5,15 +5,17 @@ import numpy as np
 import tensorflow as tf
 import pandas as pd
 from sklearn.model_selection import train_test_split
-from keras.preprocessing.text import Tokenizer
-from keras.preprocessing.sequence import pad_sequences
+from tensorflow.keras.preprocessing.text import Tokenizer
+from tensorflow.keras.preprocessing.sequence import pad_sequences
 import re
-
 from tensorflow.keras.layers import Dropout
 from tensorflow.keras.callbacks import EarlyStopping
 from tensorflow.keras.regularizers import l2
 from sklearn.preprocessing import LabelEncoder
 from tensorflow.keras.utils import to_categorical
+from tensorflow.keras.callbacks import EarlyStopping
+
+import keras
 
 def clean_text(text):
 	text = text.lower()
@@ -66,24 +68,32 @@ test_padded = pad_sequences(test_sequences, maxlen=max_length, padding='post', t
 # Convert labels to one-hot encoding
 encoder = LabelEncoder()
 encoder.fit(train_labels)
-train_labels = to_categorical(encoder.transform(train_labels))
-test_labels = to_categorical(encoder.transform(test_labels))
+# train_labels = to_categorical(encoder.transform(train_labels))
+# test_labels = to_categorical(encoder.transform(test_labels))
+train_labels = to_categorical(encoder.transform(train_labels), num_classes=len(labels.nunique()))
+test_labels  = to_categorical(encoder.transform(test_labels), num_classes=len(labels.nunique()))
+
 
 # Define the model
 model = tf.keras.Sequential()
-
-model.add(tf.keras.layers.Embedding(num_words, 32, input_length=max_length)),
-model.add(tf.keras.layers.Conv1D(64, 5, activation='relu')),
+model.add(tf.keras.layers.Embedding(num_words, 17, input_length=max_length)),
+model.add(tf.keras.layers.Conv1D(128, 7, activation='swish')),
+model.add(tf.keras.layers.Conv1D(64, 5, activation='swish')),
 model.add(tf.keras.layers.GlobalMaxPooling1D()),
-model.add(tf.keras.layers.Dense(24, activation='relu')),
+model.add(tf.keras.layers.Flatten()),
+# model.add(tf.keras.layers.Dense(17, activation='relu')),
+# model.add(tf.keras.layers.Dense(len(labels.nunique()), activation='softmax'))
 model.add(tf.keras.layers.Dense(len(labels.nunique()), activation='softmax'))
+# model.add(tf.keras.layers.Dense(1, activation='softmax'))
 
 optimizer = tf.keras.optimizers.Adam(learning_rate=0.01)
 model.compile(loss='categorical_crossentropy', optimizer=optimizer, metrics=['accuracy'])
 
+# Define early stopping
+early_stopping = EarlyStopping(monitor='val_loss', patience=12)
 
 num_epochs = 30
-model.fit(train_padded, train_labels, epochs=num_epochs, validation_data=(test_padded, test_labels), batch_size=64, use_multiprocessing=True)
+model.fit(train_padded, train_labels, epochs=num_epochs, validation_data=(test_padded, test_labels), batch_size=64, use_multiprocessing=True, callbacks=[early_stopping])
 
 # import pandas as pd
 # from sklearn.model_selection import train_test_split
