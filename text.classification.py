@@ -55,9 +55,9 @@ def import_text():
 
 
 
-def preprocess_data(df, num_words = 20000, test_size = 0.2):
+def preprocess_data(texts, labels, num_words = 20000, test_size = 0.2):
     # Split data into training and testing sets
-    train_texts, test_texts, train_labels, test_labels = train_test_split(df['content'], df['category_level_1'], test_size=test_size)
+    train_texts, test_texts, train_labels, test_labels = train_test_split(texts, labels, test_size=test_size)
     
     # Tokenize texts
     tokenizer = Tokenizer(num_words=num_words, oov_token="<OOV>")

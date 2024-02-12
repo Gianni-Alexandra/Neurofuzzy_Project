@@ -5,17 +5,26 @@ import numpy as np
 import tensorflow as tf
 import pandas as pd
 from sklearn.model_selection import train_test_split
-from tensorflow.keras.preprocessing.text import Tokenizer
-from tensorflow.keras.preprocessing.sequence import pad_sequences
-import re
-from tensorflow.keras.layers import Dropout
-from tensorflow.keras.callbacks import EarlyStopping
-from tensorflow.keras.regularizers import l2
 from sklearn.preprocessing import LabelEncoder
-from tensorflow.keras.utils import to_categorical
-from tensorflow.keras.callbacks import EarlyStopping
+import re
 
-import keras
+USE_TF = True
+if USE_TF:
+	from tensorflow.keras.layers import Dropout
+	from tensorflow.keras.callbacks import EarlyStopping
+	from tensorflow.keras.regularizers import l2
+	from tensorflow.keras.utils import to_categorical
+	from tensorflow.keras.callbacks import EarlyStopping
+	from tensorflow.keras.preprocessing.text import Tokenizer
+	from tensorflow.keras.preprocessing.sequence import pad_sequences
+else:
+	from keras.layers import Dropout
+	from keras.callbacks import EarlyStopping
+	from keras.regularizers import l2
+	from keras.utils import to_categorical
+	from keras.callbacks import EarlyStopping
+	from keras.preprocessing.text import Tokenizer
+	from keras.preprocessing.sequence import pad_sequences
 
 def clean_text(text):
 	text = text.lower()
@@ -46,6 +55,12 @@ labels = pd.get_dummies(labels)
 # Split data into training and testing sets
 train_texts, test_texts, train_labels, test_labels = train_test_split(df['content'], df['category_level_1'], test_size=0.2)
 
+# Convert labels to one-hot encoding
+encoder = LabelEncoder()
+encoder.fit(train_labels)
+train_labels = to_categorical(encoder.transform(train_labels), num_classes=len(labels.nunique()))
+test_labels  = to_categorical(encoder.transform(test_labels), num_classes=len(labels.nunique()))
+
 # Tokenize texts
 num_words = 20000
 tokenizer = Tokenizer(num_words=num_words, oov_token="<OOV>")
@@ -64,15 +79,6 @@ test_sequences = tokenizer.texts_to_sequences(test_texts)
 max_length = max_sequence_length # Set the max length to the length of the longest sequence
 train_padded = pad_sequences(train_sequences, maxlen=max_length, padding='post', truncating='post')
 test_padded = pad_sequences(test_sequences, maxlen=max_length, padding='post', truncating='post')
-
-# Convert labels to one-hot encoding
-encoder = LabelEncoder()
-encoder.fit(train_labels)
-# train_labels = to_categorical(encoder.transform(train_labels))
-# test_labels = to_categorical(encoder.transform(test_labels))
-train_labels = to_categorical(encoder.transform(train_labels), num_classes=len(labels.nunique()))
-test_labels  = to_categorical(encoder.transform(test_labels), num_classes=len(labels.nunique()))
-
 
 # Define the model
 model = tf.keras.Sequential()
@@ -171,3 +177,21 @@ df = pd.DataFrame({
 })
 
 print(df)
+
+def train(model, train_texts, train_labels, test_texts, test_labels, epochs=30, batch_size=128):
+	early_stopping = EarlyStopping(monitor='val_loss', patience=12)
+	model.fit(train_texts, train_labels, validation_data=(test_texts, test_labels), epochs=epochs, batch_size=batch_size, callbacks=[early_stopping], use_multiprocessing=True)
+
+def evaluate_predict(model, test_texts, test_labels):
+	loss, accuracy = model.evaluate(test_texts, test_labels)
+	print(f'Loss: {loss}, Accuracy: {accuracy}')
+
+	predictions = model.predict(test_texts)
+
+	predicted_labels = np.argmax(predictions, axis=1)
+	actual_labels = np.argmax(test_labels, axis=1)
+	df = pd.DataFrame({
+		'Predicted': predicted_labels,
+		'Actual': actual_labels
+	})
+	print(df)
