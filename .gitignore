@@ -1,3 +1,36 @@
 # Ignore logs folder
 logs/
 .vscode/ 
+
+# TexStudio metafiles
+*.aux
+*.dvi
+*.lof
+*.lot
+*.log
+*.bit
+*.idx
+*.glo
+*.bbl
+*.bcf
+*.ilg
+*.toc
+*.ind
+*.out
+*.blg
+*.fdb_latexmk
+*.fls
+*.run.xml
+*.synctex.gz
+
+# Matlab metafiles
+.aux
+
+# Inkscape svg
+svg-inkscape/
+*.log
+*.asv
+*.synctex(busy)
+
+# Vscode folders
+.vscode/
