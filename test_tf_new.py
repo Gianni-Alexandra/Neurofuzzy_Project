@@ -44,9 +44,17 @@ def clean_text(text):
 # Load data
 df = pd.read_csv('news-classification.csv')
 
+
 # Split data into features and labels
 texts = df['content']
 labels = df['category_level_1']
+
+# Count the number of sentences in each text
+df['sentence_count'] = texts.str.count('\.|\?|!')
+number_of_sentences = df['sentence_count']
+sum_of_sentences = df['sentence_count'].sum()
+print("Sentences\n",number_of_sentences)
+print("Sum is\n",sum_of_sentences)
 
 texts = texts.apply(clean_text)
 

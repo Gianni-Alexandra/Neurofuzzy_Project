@@ -8,10 +8,11 @@ import pandas as pd
 import re
 from sklearn.model_selection import train_test_split
 from sklearn.preprocessing import LabelEncoder
-from nltk.stem import LancasterStemmer
+# from nltk.stem import LancasterStemmer
 USE_TF = True
 if USE_TF:
-  from tensorflow.keras.layers import Dropout
+  from tensorflow.keras.layers import Flatten, Dense
+  from tensorflow.keras.optimizers import Adam
   from tensorflow.keras.callbacks import EarlyStopping
   from tensorflow.keras.regularizers import l2
   from tensorflow.keras.utils import to_categorical
@@ -46,13 +47,31 @@ def clean_text(text):
 
 #  Import text
 def import_text():
-  df = pd.read_csv('drive/MyDrive/news-classification.csv')
+  df = pd.read_csv('news-classification.csv')
   texts = df['content']
   labels = df['category_level_1']
   labels = pd.get_dummies(labels)
-  return texts, labels
+
+  # Count the number of sentences in each text
+  df['sentence_count'] = texts.str.count('\.|\?|!')
+  number_of_sentences = df['sentence_count']
+  return texts, labels, number_of_sentences
+
+def build_model(lr, num_words, input_length, dense_neuron_num):
+  model = Sequential()
+  model.add(Embedding(num_words, 17, input_length=input_length))
+  model.add(Conv1D(128, 5, activation='ReLU'))
+  model.add(Conv1D(64, 7, activation='ReLU'))
+  model.add(GlobalMaxPooling1D())
+  model.add(Flatten())
+  model.add(Dense(dense_neuron_num,activation='softmax'))
+
+  optimizer = Adam(learning_rate=lr)
+  model.compile(loss='categorical_crossentropy', optimizer=optimizer, metrics=['accuracy'])
+  return model
 
 def preprocess_data(texts, labels, num_words = 20000, test_size = 0.2):
+    texts = texts.apply(clean_text)
     # Split data into training and testing sets
     train_texts, test_texts, train_labels, test_labels = train_test_split(texts, labels, test_size=test_size)
     
@@ -101,3 +120,13 @@ def evaluate_predict(model, test_texts, test_labels):
 	})
 	print(df)
 
+# texts, labels = import_text('news-classification.csv')
+texts, labels = import_text()
+
+train_texts, test_texts, train_labels, test_labels, tokenizer, max_length = preprocess_data(texts, labels)
+
+model = build_model(0.01, 20e3, max_length, len(labels.nunique()))
+
+model = train(model, train_texts, train_labels, test_texts, test_labels, batch_size=64)
+
+evaluate_predict(model, test_texts, test_labels)
