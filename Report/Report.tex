@@ -1,7 +1,7 @@
 % !TeX spellcheck = en_US
 \documentclass[a4paper,12pt]{article}
 \usepackage{listings}
-%\usepackage[T1]{fontenc}
+\usepackage{indentfirst}
 \usepackage{fontspec}
 \usepackage[greek, english]{babel}
 \usepackage[super]{nth}
@@ -57,7 +57,7 @@ pdfsubject={ECE447 - Neuro-Fuzzy Computing}]{hyperref}
 
 \pagestyle{fancy}
 \fancyhf{}
-\fancyhead[l]{\footnotesize Project Report}
+\fancyhead[l]{\footnotesize Coding project}
 \fancyhead[r]{\footnotesize Neuro-Fuzzy Computing}
 %\fancyfoot[r]{\footnotesize \thepage}
 \renewcommand{\footrulewidth}{0.4pt} % Line at the footer visible
@@ -69,10 +69,10 @@ pdfsubject={ECE447 - Neuro-Fuzzy Computing}]{hyperref}
 	\renewcommand{\headrulewidth}{0pt}
 	\fancyfoot[c]{{\large \today}}
 	\renewcommand{\footrulewidth}{0.0pt} % Line at the footer visible
-} 
+}
 
 \newcommand{\MathSpace}{\ }
-\setlength{\parindent}{0pt} % Paragraph identation is set to 0
+%\setlength{\parindent}{0pt} % Paragraph identation is set to 0
 
 \newcommand\ddfrac[2]{\frac{\displaystyle #1}{\displaystyle #2}} % Better fractions for inline
 
@@ -105,7 +105,7 @@ pdfsubject={ECE447 - Neuro-Fuzzy Computing}]{hyperref}
 		%----------------------------------------------------------------------------------------
 		
 		\HRule \\[0.5cm]
-		{ \huge \nth{2} Problem Set}\\[0.4cm] % Title of your document
+		{ \huge Coding Project}\\[0.4cm] % Title of your document
 		\HRule \\[1.8cm]
 		
 		%----------------------------------------------------------------------------------------
@@ -135,6 +135,10 @@ pdfsubject={ECE447 - Neuro-Fuzzy Computing}]{hyperref}
 		
 	\end{titlepage}
 	
-%	\input{}
+	\tableofcontents
+	\newpage
+	
+	\input{Sources/introduction.tex}
+	
 	
 \end{document}
