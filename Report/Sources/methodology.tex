@@ -113,7 +113,7 @@ Also, the selected ratio we chose is very popular in bibliography and on the int
 To facilitate this data partitioning, we utilize the \verb|train_test_split| function provided by the \verb|sklearn| library, a tool renowned for its robustness and ease of use in the machine learning community. This function streamlines the process of randomly dividing the dataset according to the specified proportions, ensuring that the split is both efficient and reproducible. By leveraging this method, we can maintain the integrity of the data's distribution, ensuring that both the training and validation sets are representative of the overall dataset. This approach not only simplifies the preprocessing workflow but also lays a solid foundation for the subsequent training phase, enabling a systematic and controlled development of a high-performing text classification model.
 
 \subsection{Handling of Class Imbalance}
-During the text cleaning and preparation procedure, we notices that there's a big class imbalance that affected the outcome of our classifier. Figure \ref{fig:initial_class_distribution} shows that \verb|lifestyle| class has the lower appearance in the set and that means that our classification system cannot detect it easily.
+During the text cleaning and preparation procedure, we noticed that there's a big class imbalance that affected the outcome of our classifier. Figure \ref{fig:initial_class_distribution} shows that \verb|lifestyle| class has the lower appearance in the set and that means our classification system cannot detect it easily.
 
 \begin{figure}[htpb]
 	\centering
@@ -122,3 +122,13 @@ During the text cleaning and preparation procedure, we notices that there's a bi
 	\label{fig:initial_class_distribution}
 \end{figure}
 
+To address this issue in our dataset, we utilized the \verb|RandomOverSampler| method provided by the \verb|imblearn| library. This technique involves artificially augmenting the under-represented classes in the training set by randomly replicating instances until all classes achieve a similar size. By doing so, we ensure that the neural network does not become biased towards the more frequent classes and can learn the characteristics of all classes equally. This step is crucial for improving the model's ability to generalize well across the entire range of classes, particularly for those that are less represented in the original dataset.
+
+In the implementation phase, \verb|RandomOverSampler| was applied after splitting the dataset into training and validation sets but before the model training process. This sequencing is intentional to prevent the oversampling process from influencing the validation set, thereby maintaining its integrity as a representative sample of real-world data. The application of \verb|RandomOverSampler| is straightforward, thanks to the intuitive API of \verb|imblearn|. With a few lines of code, we were able to fit the sampler to our training data, resulting in a modified training set with balanced class distributions. The distribution after balancing can be shown in figure \ref{fig:final_class_distribution}.
+
+\begin{figure}[htpb]
+	\centering
+	\includegraphics[width=\linewidth]{Images/final_class_distribution.pdf}
+	\caption{Final class distribution of the given dataset}
+	\label{fig:final_class_distribution}
+\end{figure}
