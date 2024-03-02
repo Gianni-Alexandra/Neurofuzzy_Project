@@ -20,6 +20,11 @@ As we are using Python for this project, in order to load this CSV file into mem
 The moment data are imported into the RAM, preparation begins in order to transform the text from human to machine understandable. 
 First of all, lower casing of all the letters is very important and used for better handling of the file.
 Everything inside the content array that doesn't give enough information can be considered noise and needs to be removed.
-A great example of \say{noise} is URLs, email addresses, lines like \say{This post was published on the site} (\textit{which can be often found at the start of an article}).
+A great example of \say{noise} is:
+\begin{itemize}
+	\item URLs,
+	\item email addresses,
+	\item lines like \say{This post was published on the site} (\textit{which can be often found at the start of an article}).
+\end{itemize}  
 
 After word removal, we use
