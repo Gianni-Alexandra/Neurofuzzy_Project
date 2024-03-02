@@ -204,6 +204,14 @@ train_texts = pd.Series(train_texts.flatten())
 However, it's important to note that oversampling can also lead to overfitting since it duplicates the minority class instances. Therefore, it's always a good idea to evaluate the model performance carefully after applying any oversampling technique.
 
 \subsection{Convert to one-hot encoding and Tokenize}
-One of the most crucial preprocessing steps is converting our text data into a format that can be processed by neural networks. This involves two main processes: one-hot encoding and tokenization. Here's an analysis of these steps and how they fit into our project:
+One of the most crucial preprocessing steps is converting our text data into a format that can be processed by neural networks. This involves two main processes: one-hot encoding and tokenization. Here's an analysis of these steps and how they fit into our project: \\
 
-Text tokenization is the process of reformatting a piece of text into smaller units called “tokens.”  It converts unstructured text into model-understandable structured data. Tokenization is a process that divides text into meaningful units, such as words, phrases, sentences, etc., so that these units can be fed into machine learning models. It’s one of the first and most important steps in natural language preprocessing, and often goes hand-in-hand with text vectorization.
+One-Hot encoding is a process of converting categorical data variables so they can be provided to machine learning algorithms to improve predictions. With one-hot, we convert each categorical value into a new categorical column and assign a binary value of 1 or 0. Each integer value is represented as a binary vector. One-hot encoding can be applied to text data to turn every word into a distinct vector. This is helpful because neural networks need numerical input and cannot comprehend text directly. Your text data can be efficiently converted into a format that your CNN can understand by one-hot encoding.
+One-hot encoding, however, produces high-dimensional vectors, which can be sparse and ineffective, particularly for large vocabularies (with dimensions equal to the size of your vocabulary). This is a simple way to represent your text data, but it may not be the most memory-efficient method.
+\\
+
+Text Tokenization is a data preprocessing technique of converting a separate piece of text
+into smaller parts like words, phrases, or any other meaningful elements called tokens
+which makes counting the number of words in the text easier. The proposed system
+performed tokenization at the word level so as to consider the sentiment polarity of
+each word.
