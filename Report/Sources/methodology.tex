@@ -1,7 +1,98 @@
 % !TeX spellcheck = en_US
 \section{Methodology}
 
-To construct a robust multiclass text classifier, our methodology was meticulously designed to ensure both efficiency and accuracy. The process is segmented into distinct phases, as shown below.
+To construct a robust multi-class text classifier, our methodology was meticulously designed to ensure both efficiency and accuracy. The process is segmented into distinct phases, as shown below.
+
+\subsection{Import Library}
+When embarking on the implementation of a machine learning project, such as the development of a multiclass text classifier, the first step involves setting up the computational environment by importing the necessary libraries. These libraries provide pre-written functions and classes that facilitate data manipulation, model building, training, and evaluation, significantly reducing the amount of code we need to write from scratch and making our job easier.
+
+\begin{lstlisting}
+	# Interact with Operation System
+	import os
+	os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'
+	
+	import nltk
+	nltk.download('stopwords')
+	from nltk.corpus import stopwords
+	stop_words = set(stopwords.words('english'))
+	
+	# Load, explore and plot data
+	import string
+	import numpy as np
+	import tensorflow as tf
+	import pandas as pd
+	import re
+	import ast
+	
+	# Train test split
+	from sklearn.model_selection import train_test_split
+	from sklearn.preprocessing import LabelEncoder
+	from collections import Counter
+	from imblearn.over_sampling import RandomOverSampler
+	
+	# Modeling
+	from keras.layers import BatchNormalization
+	USE_TF = True
+	if USE_TF:
+	from tensorflow.keras.layers import LSTM
+	from tensorflow.keras import Sequential
+	from tensorflow.keras.layers import Dropout
+	from tensorflow.keras.callbacks import EarlyStopping
+	from tensorflow.keras.regularizers import l2
+	from tensorflow.keras.utils import to_categorical
+	from tensorflow.keras.callbacks import EarlyStopping
+	from tensorflow.keras.preprocessing.text import Tokenizer
+	from tensorflow.keras.preprocessing.sequence import pad_sequences
+	from tensorflow.keras.layers import Embedding
+	from tensorflow.keras.layers import Conv1D
+	from tensorflow.keras.layers import GlobalMaxPooling1D
+	from tensorflow.keras.layers import Flatten
+	from tensorflow.keras.layers import Dense
+	from tensorflow.keras.optimizers import Adam
+	from tensorflow.keras.layers import LeakyReLU
+	else:
+	from keras.layers import LSTM
+	from keras.layers import LeakyReLU
+	from keras.optimizers import Adam
+	from keras.layers import Dense
+	from keras.layers import Flatten
+	from keras.layers import Embedding
+	from keras.layers import GlobalMaxPooling1D
+	from keras.layers import Conv1D
+	from keras.layers import Sequential
+	from keras.layers import Dropout
+	from keras.callbacks import EarlyStopping
+	from keras.regularizers import l2
+	from keras.utils import to_categorical
+	from keras.callbacks import EarlyStopping
+	from keras.preprocessing.text import Tokenizer
+	from keras.preprocessing.sequence import pad_sequences
+\end{lstlisting}
+
+These are all the libraries required to load, test, train and build our model. To have a better understanding about their functionality, we will briefly discuss them.
+\begin{itemize}
+	\item \textbf{os}: A standard Python library for interacting with the operating system. It's being used here to set an environment variable
+	
+	\item \textbf{nltk}: The Natural Language Toolkit, or NLTK, is a library used for working with human language data.
+	
+	\item \textbf{numpy}: A basic Mython library adding support for large, multi-dimensional arrays and matrices, along with a large collection of high-level mathematical functions to operate on these arrays.
+	
+	\item \textbf{tensorflow}: An open-source software library for machine learning and artificial intelligence. It provides a flexible platform for defining and running computations that involve tensors, which are partial derivatives of a function with respect to its variables.
+	
+	\item \textbf{pandas}: A software library for data manipulation and analysis. It provides data structures and functions needed to manipulate structured data.
+	
+	\item \textbf{re}: This module provides regular expression matching operations
+	
+	\item \textbf{sklearn}: Scikit-learn is a free software machine learning library for the Python programming language. It features various classification, regression and clustering algorithms.
+	
+	\item \textbf{collections}: This module implements specialized container datatypes providing alternatives to Python’s general purpose built-in containers.
+	
+	\item \textbf{keras}: A high-level neural networks API, written in Python and capable of running on top of TensorFlow, CNTK, or Theano.
+	
+	\item \textbf{imblearn}: A Python library to tackle the curse of imbalanced datasets in machine learning.
+\end{itemize}
+
+
 
 \subsection{Data Acquisition}
 The initial step involved getting the dataset provided by the professor and understanding its contents. The \verb|news-classification.csv| file is a Comma-Separated Values file, a common file type for distributing large amounts of data over the internet. 
@@ -17,6 +108,7 @@ As we are using Python for this project, in order to load this CSV file into mem
 
 \subsection{Data Cleaning}
 
+Text is just a sequence of words, or more accurately, a sequence of characters. However, when we are usually dealing with language modelling or natural language processing, we are more concerned about the words as a whole rather than focusing only on the character-level depth of our text data. One explanation for this is the lack of \say{context} for individual characters in the language models.\\
 The moment data are imported into the RAM, preparation begins in order to transform the text from human to machine understandable. 
 First of all, lower casing of all the letters is very important and used for better handling of the file.
 Everything inside the content array that doesn't give enough information can be considered noise and needs to be removed.
