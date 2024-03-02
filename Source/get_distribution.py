@@ -12,7 +12,7 @@ import nltk
 from nltk.corpus import stopwords
 nltk.download('stopwords')
 
-df = pd.read_csv('news-classification.csv')
+df = pd.read_csv('../news-classification.csv')
 
 df = df[['category_level_1', 'content']]
 

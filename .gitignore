@@ -34,3 +34,6 @@ svg-inkscape/
 
 # Vscode folders
 .vscode/
+
+# Pycache
+__pycache__/
