@@ -1,0 +1,25 @@
+% !TeX spellcheck = en_US
+\section{Methodology}
+
+To construct a robust multiclass text classifier, our methodology was meticulously designed to ensure both efficiency and accuracy. The process is segmented into distinct phases, as shown below.
+
+\subsection{Data Acquisition}
+The initial step involved getting the dataset provided by the professor and understanding its contents. The \verb|news-classification.csv| file is a Comma-Separated Values file, a common file type for distributing large amounts of data over the internet. 
+This type of data type can be viewed as a large array of structs that contain a lot of information, but we only need the following columns:
+\begin{itemize}
+	\item \verb|category_level_1|: Name of text's category (\textit{strings}).
+	\item \verb|category_level_2|: Name of text's subcategory (\textit{strings}).
+	\item \verb|content|: The actual text content (\textit{strings}).
+\end{itemize}
+The rest of the columns are not necessary because they do not give us some kind of important information about the text's contents.
+
+As we are using Python for this project, in order to load this CSV file into memory, we used \verb|pandas|'s \verb|read_csv()| function that automatically imports the necessary file to a \verb|Dataframe| format.
+
+\subsection{Data Preparation}
+
+The moment data are imported into the RAM, preparation begins in order to transform the text from human to machine understandable. 
+First of all, lower casing of all the letters is very important and used for better handling of the file.
+Everything inside the content array that doesn't give enough information can be considered noise and needs to be removed.
+A great example of \say{noise} is URLs, email addresses, lines like \say{This post was published on the site} (\textit{which can be often found at the start of an article}).
+
+After word removal, we use
