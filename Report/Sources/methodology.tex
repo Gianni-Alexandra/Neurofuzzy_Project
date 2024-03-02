@@ -31,9 +31,7 @@ When embarking on the implementation of a machine learning project, such as the 
 	from imblearn.over_sampling import RandomOverSampler
 	
 	# Modeling
-	from keras.layers import BatchNormalization
-	USE_TF = True
-	if USE_TF:
+	from tensorflow.keras.layers import BatchNormalization
 	from tensorflow.keras.layers import LSTM
 	from tensorflow.keras import Sequential
 	from tensorflow.keras.layers import Dropout
@@ -50,23 +48,7 @@ When embarking on the implementation of a machine learning project, such as the 
 	from tensorflow.keras.layers import Dense
 	from tensorflow.keras.optimizers import Adam
 	from tensorflow.keras.layers import LeakyReLU
-	else:
-	from keras.layers import LSTM
-	from keras.layers import LeakyReLU
-	from keras.optimizers import Adam
-	from keras.layers import Dense
-	from keras.layers import Flatten
-	from keras.layers import Embedding
-	from keras.layers import GlobalMaxPooling1D
-	from keras.layers import Conv1D
-	from keras.layers import Sequential
-	from keras.layers import Dropout
-	from keras.callbacks import EarlyStopping
-	from keras.regularizers import l2
-	from keras.utils import to_categorical
-	from keras.callbacks import EarlyStopping
-	from keras.preprocessing.text import Tokenizer
-	from keras.preprocessing.sequence import pad_sequences
+
 \end{lstlisting}
 
 These are all the libraries required to load, test, train and build our model. To have a better understanding about their functionality, we will briefly discuss them.
