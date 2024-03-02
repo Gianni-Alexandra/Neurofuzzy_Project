@@ -80,11 +80,21 @@ This type of data type can be viewed as a large array of structs that contain a 
 \end{itemize}
 The rest of the columns are not necessary because they do not give us some kind of important information about the text's contents.
 
-As we are using Python for this project, in order to load this CSV file into memory, we used \verb|pandas|'s \verb|read_csv()| function that automatically imports the necessary file to a \verb|Dataframe| format.
+As we are using Python for this project, in order to load this CSV file into memory, we used \verb|pandas|'s \verb|read_csv()| function that automatically imports the necessary file to a \verb|Dataframe| format.\\
+
+\begin{lstlisting}
+df = pd.read_csv(fname)
+texts = df['content'].apply(clean_text)
+label_level1 = df['category_level_1']
+label_level2 = df['category_level_2']
+	
+return texts, label_level1, label_level2
+\end{lstlisting}
 
 \subsection{Data Cleaning}
 
 Text is just a sequence of words, or more accurately, a sequence of characters. However, when we are usually dealing with language modelling or natural language processing, we are more concerned about the words as a whole rather than focusing only on the character-level depth of our text data. One explanation for this is the lack of \say{context} for individual characters in the language models.\\
+
 The moment data are imported into the RAM, preparation begins in order to transform the text from human to machine understandable. 
 First of all, lower casing of all the letters is very important and used for better handling of the file.
 Everything inside the content array that doesn't give enough information can be considered noise and needs to be removed.
@@ -94,25 +104,72 @@ A great example of \say{noise} is:
 	\item Email addresses,
 	\item Lines like \say{This post was published on the site} (\textit{which can be often found at the start of an article}),
 	\item Multiple space or new line characters,
-	\item Punctuation.
+	\item Punctuation,
+	\item Stopwords
 \end{itemize}  
 
-In the preprocessing phase of text classification, one critical step is the removal of stopwords, which are words that do not contribute significant meaning to the text and are thus considered irrelevant for analysis.
+In the preprocessing phase of text classification, one critical step and very useful technique is the removal of stopwords, which are words that do not contribute significant meaning to the text and are thus considered irrelevant for analysis.
 The Natural Language Toolkit (NLTK), a comprehensive library for natural language processing in Python, provides an extensive dictionary of stopwords across multiple languages. Utilizing NLTK's stopwords dictionary allows for the efficient filtering out of common words such as "the", "is", "in", and "and", which appear frequently in text but do not carry substantial information relevant to the classification task.
 The process involves iterating over the words in the dataset and removing those that are present in the NLTK stopwords list.
-This reduction in dataset size not only streamlines the computational process by focusing on words that carry more meaning but also improves the model's ability to learn by concentrating on content that is more likely to influence the classification outcome.
+This reduction in dataset size not only streamlines the computational process by focusing on words that carry more meaning but also improves the model's ability to learn by concentrating on content that is more likely to influence the classification outcome.\\
+
+\begin{lstlisting}
+def clean_text(text):
+text = text.lower()
+text = text.replace('\xa0', ' ')  # Remove non-breaking spaces 
+text = re.sub(r'http\S+|www.\S+', '', text)  # Remove URLs
+text = re.sub(r'\S+@\S+', '', text)    # Remove email addresses
+text = re.sub(r'\n', ' ', text)  # Replace newline characters with space 
+text = re.sub(r'^.*\b(this|post|published|site)\b.*$\n?', '', text, flags=re.MULTILINE)    # Remove lines like 'This post was published on the site'
+text = re.sub(r'\\(?!n|r)', '', text)   # Remove anything but backslashes
+text = text.replace('[\r \n]\n', ' ')   # Remove newlines 
+text = re.sub(r'[\r\n]{2,}', ' ', text)
+text = re.sub(r'from[: ]* ', '', text) # Remove 'from' at the beginning of the text
+text = re.sub(r'  ', ' ', text) # Remove double spaces 
+text = re.sub(r'\(photo by .*\)', '', text) # Remove lines like '(photo by reuters)' 
+
+words = text.split()
+filtered_words = [word for word in words if word not in stop_words]
+text = ' '.join(filtered_words)
+	
+return text
+\end{lstlisting}
 
 \subsection{Dataset Split}
 In the development of this text classifier, a critical step in the methodology is the partitioning of the dataset into training and validation subsets.
-This process, essential for both training the model effectively and evaluating its performance, employs a standard split ratio of $80\%$ for training data and $20\%$ for validation data.
+This process is essential for training the model effectively and evaluating its performance, employing a standard split ratio of $80\%$ for training data and $20\%$ for validation data.
 Such a division is strategically chosen to provide the model with a sufficiently large training dataset, enabling it to learn the underlying patterns of the text, while also reserving a representative portion of the data for performance evaluation and tuning.
 The use of a validation set, separate from the training set, is pivotal in detecting and mitigating overfitting, ensuring that the model generalizes well to new, unseen data.
 Also, the selected ratio we chose is very popular in bibliography and on the internet as well.
 
-To facilitate this data partitioning, we utilize the \verb|train_test_split| function provided by the \verb|sklearn| library, a tool renowned for its robustness and ease of use in the machine learning community. This function streamlines the process of randomly dividing the dataset according to the specified proportions, ensuring that the split is both efficient and reproducible. By leveraging this method, we can maintain the integrity of the data's distribution, ensuring that both the training and validation sets are representative of the overall dataset. This approach not only simplifies the preprocessing workflow but also lays a solid foundation for the subsequent training phase, enabling a systematic and controlled development of a high-performing text classification model.
+To facilitate this data partitioning, we utilize the \verb|train_test_split| function provided by the \verb|sklearn| library, a tool renowned for its robustness and ease of use in the machine learning community. This function streamlines the process of randomly dividing the dataset according to the specified proportions, ensuring that the split is both efficient and reproducible. By leveraging this method, we can maintain the integrity of the data's distribution, ensuring that both the training and validation sets are representative of the overall dataset. This approach not only simplifies the preprocessing workflow but also lays a solid foundation for the subsequent training phase, enabling a systematic and controlled development of a high-performing text classification model.\\
+
+\begin{lstlisting}
+def preprocess_data(texts, labels, test_size = 0.2, max_words=10000, max_len = 200):
+	
+texts = texts.apply(clean_text)
+	
+# Split data into training and testing sets
+train_texts, test_texts, train_labels, test_labels = train_test_split(texts, labels, test_size=test_size)
+\end{lstlisting}
+
+The \say{preprocess\_data} function is designed to prepare and preprocess textual data for text classification tasks. It accepts several parameters, like:
+\begin{itemize}
+	\item "\verb*|texts|" and "\verb*|labels|": These are the input parameters of the function. "Texts" is a list of series of text data that you want to preprocess, and "labels" are their corresponding labels.
+	
+	\item "\verb*|test_size|": This is the proportion of the dataset to include in the test split. It is set to $0.2$ by default, meaning that $20\%$ of the data will be used for testing and the rest for training.
+	
+	\item "\verb*|max_words|", "\verb*|max_len|":  These parameters are likely to be used in tokenization process where max\_words is the maximum number of words to keep, based on word frequency and max\_len is the maximum length of all sequences.
+	
+	\item "\verb*|texts=texts.apply(clean_text)|": This line applies a function clean\_text to every item in texts. The clean\_text function is not defined in the provided code, but it's likely that it performs some sort of cleaning operation on the text such as removing punctuation, converting to lowercase, removing stopwords, etc.
+	
+	\item "\verb*|train_test_split|": This is a function from \verb*|sklearn.model_selection| that splits a dataset into training set and test set. The test\_size parameter determines the proportion of the original data that is put into the test set.
+\end{itemize} 
+
+In summary, this function encapsulates a comprehensive preprocessing workflow that cleans the input texts, splits the data for training and evaluation, and addresses class imbalance to prepare the data for effective model training. 
 
 \subsection{Handling of Class Imbalance}
-During the text cleaning and preparation procedure, we noticed that there's a big class imbalance that affected the outcome of our classifier. Figure \ref{fig:initial_class_distribution} shows that \verb|lifestyle| class has the lower appearance in the set and that means our classification system cannot detect it easily.
+During the text cleaning and preprocessing procedure, we noticed that there's a big class imbalance that affected the outcome of our classifier. Addressing class imbalance is crucial for a balanced and reliable performance across all classes in text classification. Class imbalance is a common challenge in text classification tasks that can result in biased models favouring the majority class, leading to poor performance on the minority class. Figure \ref{fig:initial_class_distribution} shows that \verb|lifestyle| class has the lower appearance in the set and that means our classification system cannot detect it easily.
 
 \begin{figure}[htpb]
 	\centering
@@ -121,9 +178,12 @@ During the text cleaning and preparation procedure, we noticed that there's a bi
 	\label{fig:initial_class_distribution}
 \end{figure}
 
-To address this issue in our dataset, we utilized the \verb|RandomOverSampler| method provided by the \verb|imblearn| library. This technique involves artificially augmenting the under-represented classes in the training set by randomly replicating instances until all classes achieve a similar size. By doing so, we ensure that the neural network does not become biased towards the more frequent classes and can learn the characteristics of all classes equally. This step is crucial for improving the model's ability to generalize well across the entire range of classes, particularly for those that are less represented in the original dataset.
+There are quite some techniques to handle imbalanced datasets, but most of them are difficult to implement. However,
+to address this issue in our dataset, we utilized the \verb|RandomOverSampler| method provided by the \verb|imblearn| library.
+This technique involves artificially augmenting the under-represented classes in the training set by randomly replicating instances until all classes achieve a similar size. By doing so, we ensure that the neural network does not become biased towards the more frequent classes and can learn the characteristics of all classes equally. This step is crucial for improving the model's ability to generalize well across the entire range of classes, particularly for those that are less represented in the original dataset.
 
 In the implementation phase, \verb|RandomOverSampler| was applied after splitting the dataset into training and validation sets but before the model training process. This sequencing is intentional to prevent the oversampling process from influencing the validation set, thereby maintaining its integrity as a representative sample of real-world data. The application of \verb|RandomOverSampler| is straightforward, thanks to the intuitive API of \verb|imblearn|. With a few lines of code, we were able to fit the sampler to our training data, resulting in a modified training set with balanced class distributions. The distribution after balancing can be shown in figure \ref{fig:final_class_distribution}.
+This technique works by randomly duplicating instances from the minority class in the training dataset to increase its representation. This oversampling process helps to balance the class distribution and can lead to improved model performance by giving the model more examples of the minority class to learn from.
 
 \begin{figure}[htpb]
 	\centering
@@ -132,4 +192,15 @@ In the implementation phase, \verb|RandomOverSampler| was applied after splittin
 	\label{fig:final_class_distribution}
 \end{figure}
 
-This issue is only met for \verb|category_level_1| as in \verb|category_level_2| the distribution is $100$ for almost all of the categories.
+This issue is only met for \verb|category_level_1| as in \verb|category_level_2| the distribution is $100$ for almost all of the categories.\\
+
+\begin{lstlisting}
+# Handling of Class Imbalance
+ros = RandomOverSampler(random_state=777)
+train_texts, train_labels = ros.fit_resample(train_texts.values.reshape(-1,1), train_labels)
+train_texts = pd.Series(train_texts.flatten())
+\end{lstlisting}
+
+However, it's important to note that oversampling can also lead to overfitting since it duplicates the minority class instances. Therefore, it's always a good idea to evaluate the model performance carefully after applying any oversampling technique.
+
+\subsection{Convert to one-hot encoding and Tokenize}
