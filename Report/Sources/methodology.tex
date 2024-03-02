@@ -43,3 +43,13 @@ Also, the selected ratio we chose is very popular in bibliography and on the int
 
 To facilitate this data partitioning, we utilize the \verb|train_test_split| function provided by the \verb|sklearn| library, a tool renowned for its robustness and ease of use in the machine learning community. This function streamlines the process of randomly dividing the dataset according to the specified proportions, ensuring that the split is both efficient and reproducible. By leveraging this method, we can maintain the integrity of the data's distribution, ensuring that both the training and validation sets are representative of the overall dataset. This approach not only simplifies the preprocessing workflow but also lays a solid foundation for the subsequent training phase, enabling a systematic and controlled development of a high-performing text classification model.
 
+\subsection{Handling of Class Imbalance}
+During the text cleaning and preparation procedure, we notices that there's a big class imbalance that affected the outcome of our classifier. Figure \ref{fig:initial_class_distribution} shows that \verb|lifestyle| class has the lower appearance in the set and that means that our classification system cannot detect it easily.
+
+\begin{figure}[htpb]
+	\centering
+	\includegraphics[width=\linewidth]{Images/initial_class_distribution.pdf}
+	\caption{Initial class distribution of the dataset}
+	\label{fig:initial_class_distribution}
+\end{figure}
+

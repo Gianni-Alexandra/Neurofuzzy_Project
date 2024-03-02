@@ -2,6 +2,7 @@ import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
 import seaborn as sns
+import matplotlib.ticker as StrLimit
 
 from imblearn.over_sampling import RandomOverSampler
 from imblearn.over_sampling import SMOTE
@@ -31,14 +32,15 @@ texts = texts.apply(clean)
 print(texts.head())
 
 
-# print('Some insights about the dataset: ')
-# print(df.describe())
-
-# plt.figure(figsize=(10, 5))
-# sns.countplot(x='category_level_1', data=df)
-# plt.title('Distribution of the categories')
-# plt.plot()
-# plt.show()
+print('Some insights about the dataset: ')
+print(df.describe()) 
+plt.figure(figsize=(10, 5))
+sns.countplot(x='category_level_1', data=df)
+labels = [label[:10] for label in df['category_level_1'].unique()]  # Limit the length of labels to 10
+plt.xticks(ticks=range(len(labels)), labels=labels, rotation=45)  # Set the xticks with the limited labels
+plt.grid()
+plt.plot()
+plt.show()
 
 # min_count = df['category_level_1'].value_counts().min()
 texts = texts.values.reshape(-1, 1)
