@@ -45,21 +45,16 @@ plt.show()
 # min_count = df['category_level_1'].value_counts().min()
 texts = texts.values.reshape(-1, 1)
 ros = RandomOverSampler(random_state=777)
-X_ROS, Y_ROS = ros.fit_resample(texts, labels)
+X_ROS, Y_ROS = ros.fit_resample(texts, df['category_level_1'])
 
-X_ROS = pd.DataFrame(X_ROS)
-# X_ROS = pd.DataFrame(X_ROS, columns=['content'])
-
-print(X_ROS.describe())
+Y_ROS = pd.DataFrame(Y_ROS, columns=['category_level_1'])
 
 plt.figure(figsize=(10, 5))
-sns.countplot(x=Y_ROS)
-plt.title('Distribution of the categories after resampling')
-# plt.xticks(rotation=45)
-# Optionally, you can also adjust the alignment and the spacing
-labels = [label[:10] for label in df['category_level_1'].unique()]  # Limit the length of labels to 10
+sns.countplot(x='category_level_1', data=Y_ROS)
+
+labels = [label[:10] for label in Y_ROS['category_level_1'].unique()]  
+
 plt.xticks(ticks=range(len(labels)), labels=labels, rotation=45)  # Set the xticks with the limited labels
 plt.tight_layout()
 plt.grid()
-plt.plot()
 plt.show()
