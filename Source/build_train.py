@@ -13,7 +13,7 @@ def build_model(lr, num_words, input_length, labels_unique_num):
   model.add(Embedding(input_dim=int(num_words), output_dim=labels_unique_num, input_length=input_length))
   model.add(Conv1D(512, 9, activation=LeakyReLU(alpha=0.01)))
   model.add(GlobalMaxPooling1D())
-  model.add(BatchNormalization()) # Mphka meta, remove me if wrong
+  model.add(BatchNormalization()) # Remove me if wrong
   model.add(Dropout(0.2)) # paei analoga me to pososto split toy dataset
   model.add(Dense(labels_unique_num, activation='softmax'))
 
