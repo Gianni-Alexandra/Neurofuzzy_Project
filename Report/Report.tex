@@ -30,6 +30,7 @@
 \usepackage{dirtytalk}
 \usepackage{gensymb}
 \usepackage{enumerate}
+\usepackage[nottoc, numbib]{tocbibind}
 
 \usepackage[pdfauthor={Alexandra Gianni, Nikos Stylianou},
 pdftitle={Project Report},
@@ -150,5 +151,10 @@ pdfsubject={ECE447 - Neuro-Fuzzy Computing}]{hyperref}
 	\input{Sources/introduction.tex}
 	\input{Sources/literature_review.tex}
 	\input{Sources/methodology.tex}
+	
+	\newpage
+	\nocite{*}
+	\bibliographystyle{ieeetr}
+	\bibliography{Sources/bibliography.bib}
 	
 \end{document}

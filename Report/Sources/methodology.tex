@@ -51,7 +51,7 @@ from tensorflow.keras.layers import LeakyReLU
 
 These are all the libraries required to load, test, train and build our model. To have a better understanding about their functionality, we will briefly discuss them.
 \begin{itemize}
-	\item \textbf{os}: A standard Python library for interacting with the operating system. It's being used here to set an environment variable
+	\item \textbf{os}: A standard Python library for interacting with the operating system. It's being used here to set an environment variable that stops \verb|tensorflow| from displaying annoying debug info.
 	
 	\item \textbf{nltk}: The Natural Language Toolkit, or NLTK, is a library used for working with human language data.
 	
@@ -159,9 +159,9 @@ The \say{preprocess\_data} function is designed to prepare and preprocess textua
 	
 	\item "\verb*|test_size|": This is the proportion of the dataset to include in the test split. It is set to $0.2$ by default, meaning that $20\%$ of the data will be used for testing and the rest for training.
 	
-	\item "\verb*|max_words|", "\verb*|max_len|":  These parameters are likely to be used in tokenization process where max\_words is the maximum number of words to keep, based on word frequency and max\_len is the maximum length of all sequences.
+	\item "\verb*|max_words|", "\verb*|max_len|":  These parameters are used in tokenization process where max\_words is the maximum number of words to keep, based on word frequency and max\_len is the maximum length of all sequences.
 	
-	\item "\verb*|texts=texts.apply(clean_text)|": This line applies a function clean\_text to every item in texts. The clean\_text function is not defined in the provided code, but it's likely that it performs some sort of cleaning operation on the text such as removing punctuation, converting to lowercase, removing stopwords, etc.
+	\item "\verb*|texts=texts.apply(clean_text)|": This line applies a function \verb|clean_text| to every item in texts. The clean\_text function is not defined in the provided code, but it's likely that it performs some sort of cleaning operation on the text such as removing punctuation, converting to lowercase, removing stopwords, etc.
 	
 	\item "\verb*|train_test_split|": This is a function from \verb*|sklearn.model_selection| that splits a dataset into training set and test set. The test\_size parameter determines the proportion of the original data that is put into the test set.
 \end{itemize} 
@@ -169,7 +169,7 @@ The \say{preprocess\_data} function is designed to prepare and preprocess textua
 In summary, this function encapsulates a comprehensive preprocessing workflow that cleans the input texts, splits the data for training and evaluation, and addresses class imbalance to prepare the data for effective model training. 
 
 \subsection{Handling of Class Imbalance}
-During the text cleaning and preprocessing procedure, we noticed that there's a big class imbalance that affected the outcome of our classifier. Addressing class imbalance is crucial for a balanced and reliable performance across all classes in text classification. Class imbalance is a common challenge in text classification tasks that can result in biased models favouring the majority class, leading to poor performance on the minority class. Figure \ref{fig:initial_class_distribution} shows that \verb|lifestyle| class has the lower appearance in the set and that means our classification system cannot detect it easily.
+During the text cleaning and preprocessing procedure, we noticed that there's a big class imbalance that affected the performance of our classifier. Addressing class imbalance is crucial for a balanced and reliable performance across all classes in text classification. Class imbalance is a common challenge in text classification tasks that can result in biased models favouring the majority class, leading to poor performance on the minority class. Figure \ref{fig:initial_class_distribution} shows that \verb|lifestyle| class has the lower appearance in the set and that means our classification system cannot detect it easily.
 
 \begin{figure}[htpb]
 	\centering
@@ -201,7 +201,7 @@ train_texts, train_labels = ros.fit_resample(train_texts.values.reshape(-1,1), t
 train_texts = pd.Series(train_texts.flatten())
 \end{lstlisting}
 
-However, it's important to note that oversampling can also lead to overfitting since it duplicates the minority class instances. Therefore, it's always a good idea to evaluate the model performance carefully after applying any oversampling technique.
+However, it's important to note that oversampling can also lead to overfitting since it duplicates the minority class instances. Therefore, it's always a good idea to evaluate the model performance carefully after applying any oversampling technique \cite{test1}.
 
 \subsection{Convert to one-hot encoding and Tokenize}
 One of the most crucial preprocessing steps is converting our text data into a format that can be processed by neural networks. This involves two main processes: one-hot encoding and tokenization. Here's an analysis of these steps and how they fit into our project: \\
