@@ -15,7 +15,7 @@ The rest of the columns are not necessary because they do not give us some kind 
 
 As we are using Python for this project, in order to load this CSV file into memory, we used \verb|pandas|'s \verb|read_csv()| function that automatically imports the necessary file to a \verb|Dataframe| format.
 
-\subsection{Data Preparation}
+\subsection{Data Cleaning}
 
 The moment data are imported into the RAM, preparation begins in order to transform the text from human to machine understandable. 
 First of all, lower casing of all the letters is very important and used for better handling of the file.
@@ -23,8 +23,23 @@ Everything inside the content array that doesn't give enough information can be 
 A great example of \say{noise} is:
 \begin{itemize}
 	\item URLs,
-	\item email addresses,
-	\item lines like \say{This post was published on the site} (\textit{which can be often found at the start of an article}).
+	\item Email addresses,
+	\item Lines like \say{This post was published on the site} (\textit{which can be often found at the start of an article}),
+	\item Multiple space or new line characters,
+	\item Punctuation.
 \end{itemize}  
 
-After word removal, we use
+In the preprocessing phase of text classification, one critical step is the removal of stopwords, which are words that do not contribute significant meaning to the text and are thus considered irrelevant for analysis.
+The Natural Language Toolkit (NLTK), a comprehensive library for natural language processing in Python, provides an extensive dictionary of stopwords across multiple languages. Utilizing NLTK's stopwords dictionary allows for the efficient filtering out of common words such as "the", "is", "in", and "and", which appear frequently in text but do not carry substantial information relevant to the classification task.
+The process involves iterating over the words in the dataset and removing those that are present in the NLTK stopwords list.
+This reduction in dataset size not only streamlines the computational process by focusing on words that carry more meaning but also improves the model's ability to learn by concentrating on content that is more likely to influence the classification outcome.
+
+\subsection{Dataset Split}
+In the development of this text classifier, a critical step in the methodology is the partitioning of the dataset into training and validation subsets.
+This process, essential for both training the model effectively and evaluating its performance, employs a standard split ratio of $80\%$ for training data and $20\%$ for validation data.
+Such a division is strategically chosen to provide the model with a sufficiently large training dataset, enabling it to learn the underlying patterns of the text, while also reserving a representative portion of the data for performance evaluation and tuning.
+The use of a validation set, separate from the training set, is pivotal in detecting and mitigating overfitting, ensuring that the model generalizes well to new, unseen data.
+Also, the selected ratio we chose is very popular in bibliography and on the internet as well.
+
+To facilitate this data partitioning, we utilize the \verb|train_test_split| function provided by the \verb|sklearn| library, a tool renowned for its robustness and ease of use in the machine learning community. This function streamlines the process of randomly dividing the dataset according to the specified proportions, ensuring that the split is both efficient and reproducible. By leveraging this method, we can maintain the integrity of the data's distribution, ensuring that both the training and validation sets are representative of the overall dataset. This approach not only simplifies the preprocessing workflow but also lays a solid foundation for the subsequent training phase, enabling a systematic and controlled development of a high-performing text classification model.
+
