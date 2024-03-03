@@ -4,7 +4,7 @@
 To construct a robust multi-class text classifier, our methodology was meticulously designed to ensure both efficiency and accuracy. The process is segmented into distinct phases, as shown below.
 
 \subsection{Import Library}
-When embarking on the implementation of a machine learning project, such as the development of a multiclass text classifier, the first step involves setting up the computational environment by importing the necessary libraries. These libraries provide pre-written functions and classes that facilitate data manipulation, model building, training, and evaluation, significantly reducing the amount of code we need to write from scratch and making our job easier.
+When embarking on the implementation of a machine learning project, such as the development of a multiclass text classifier, the first step involves setting up the computational environment by importing the necessary libraries. These libraries provide pre-written functions and classes that facilitate data manipulation, model building, training, and evaluation, significantly reducing the amount of code we need to write from scratch and making our job easier.\\
 
 \begin{lstlisting}
 # Interact with Operation System
@@ -273,7 +273,7 @@ test_padded = pad_sequences(test_sequences, maxlen=max_length, padding='post', t
 \begin{itemize}
 	\item \verb*|padding="post"|: Add the zeros at the end of the sequence to make the samples in the same size
 	
-	\item \verb*|maxlen=maxlength|: This input defines the maximum number of words among our sentences where the default maximum length of sentences is defined by the longest sentence. When a sentence exceeds the number of max words then it will drop the words and by default setting, it will drop the words at the beginning of the sentence.
+	\item \verb*|maxlen=max_length|: This input defines the maximum number of words among our sentences where the default maximum length of sentences is defined by the longest sentence. When a sentence exceeds the number of max words then it will drop the words and by default setting, it will drop the words at the beginning of the sentence.
 	
 	\item \verb*|truncating="post"|: Setting this truncating parameter as post means that when a sentence exceeds the number of maximum words, drop the last words in the sentence instead of the default setting which drops the words from the beginning of the sentence.
 \end{itemize}
