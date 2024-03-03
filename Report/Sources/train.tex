@@ -1,0 +1,30 @@
+% !TeX spellcheck = en_US
+\section{Train}
+To train the model we have made a custom function. This custom training function encapsulates the training loop, providing a convenient and reusable way to train our neural network on any given dataset.
+
+\begin{itemize}
+	\item \verb*|model|: This is the neural network model that we have already defined and compiled with the necessary architecture, loss function, optimizer, and metrics.
+	
+	\item \verb*|train_texts|: These are the training data inputs. In the context of our code it is a preprocessed and tokenized text data.
+	
+	\item \verb*|train_labels|: These are the corresponding labels for the train\_texts. In our case, the labels are one-hot encoded vectors.
+	
+	\item \verb*|test_texts|: These are the testing data features. Similar to train\_texts, but this data is not used for training the model. Instead, it's used to evaluate the model's performance at the end of each epoch to see how well it generalizes to unseen data.
+	
+	\item \verb*|test_labels|: These are the testing data labels. They are the targets for the test\_texts and are used to calculate the validation loss and accuracy of the model.
+	
+	\item \verb*|batch_size|: This parameter defines the number of samples that will be propagated through the network at one time. It is a crucial hyperparameter that can affect the convergence and performance of the neural network. Here the batch\_size = 64.
+	
+	\item \verb*|epochs|: The number of times the learning algorithm will work through the entire training dataset. Here max\_epoch = 10.
+\end{itemize}
+
+\begin{lstlisting}
+# Train the model
+def train(model, train_texts, train_labels, test_texts, test_labels, batch_size, epochs=40):
+
+history = model.fit(train_texts, train_labels, validation_data=(test_texts, test_labels), epochs=epochs, batch_size=batch_size, use_multiprocessing=True)
+
+return model, history
+\end{lstlisting}
+
+When this train function is called with the appropriate parameters, it will execute the training process, iterating over the training data in mini-batches of size batch\_size for a total of epochs times through the dataset. During each epoch, the model's weights will be updated in an attempt to minimize the loss function, and after every epoch, the model's performance will be evaluated on the test set to monitor its accuracy and generalization capability.
