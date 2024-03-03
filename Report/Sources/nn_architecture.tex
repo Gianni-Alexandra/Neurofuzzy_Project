@@ -9,18 +9,33 @@ Controversely, CNN is a class of deep, feed-forward artificial neural networks w
 
 An RNN is trained to recognize patterns across time, while a CNN learns to recognize patterns across space. The best way to determine which to use is to try both and see which one performs better on our project. \\
 A big argument for CNNs is that they are exceptionaly fast. Based on computation time, CNN's seems to be much faster, sometimes also 5 times faster, than RNN's.
- 
 
-\begin{minipage}{0.47\linewidth}
+\begin{figure}[htpb]
 	\centering
-	\includegraphics[height=0.9\textheight]{Images/model_level_1.keras.pdf}
-	\captionof{figure}{Architecture of the model for \textit{category\_level\_1}}
-\end{minipage}\hfill
-\begin{minipage}{0.48\linewidth}
-	\centering
-	\includegraphics[height=0.9\textheight]{Images/model_level_2.keras.pdf}
-	\captionof{figure}{Architecture of the model for \textit{category\_level\_2}}
-\end{minipage}
+	\begin{subfigure}{0.47\linewidth}
+		\centering
+		\includegraphics[height=0.9\textheight]{Images/model_level_1.keras.pdf}
+		\caption{\textit{category\_level\_1}}
+	\end{subfigure}
+	\begin{subfigure}{0.47\linewidth}
+		\centering
+		\includegraphics[height=0.9\textheight]{Images/model_level_2.keras.pdf}
+		\caption{\textit{category\_level\_2}}
+	\end{subfigure}
+	\caption{Architecture of the neural networks}
+	\label{fig:nn_architectures}
+\end{figure}
+ 
+%\begin{minipage}{0.47\linewidth}
+%	\centering
+%	\includegraphics[height=0.9\textheight]{Images/model_level_1.keras.pdf}
+%	\captionof{figure}{Architecture of the model for \textit{category\_level\_1}}
+%\end{minipage}\hfill
+%\begin{minipage}{0.48\linewidth}
+%	\centering
+%	\includegraphics[height=0.9\textheight]{Images/model_level_2.keras.pdf}
+%	\captionof{figure}{Architecture of the model for \textit{category\_level\_2}}
+%\end{minipage}
 
 \subsection{Embedding Layer}
 
