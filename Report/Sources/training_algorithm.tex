@@ -1,0 +1,29 @@
+% !TeX spellcheck = en_US
+\section{Training Algorithm}
+An adaptive learning rate optimization technique created especially for deep neural network training is called the Adam optimizer. It is an extension of the stochastic gradient descent (SGD) algorithm and is designed to update the weights of a neural network during training. The term “Adam” is derived from “adaptive moment estimation,” highlighting its ability to adaptively adjust the learning rate for each network weight individually. Unlike SGD, which maintains a single learning rate throughout training, Adam optimizer dynamically computes individual learning rates based on the past gradients and their second moments.
+The creators of Adam optimizer incorporated the beneficial features of other optimization algorithms such as AdaGrad and RMSProp. Similar to RMSProp, Adam optimizer considers the second moment of the gradients, but unlike RMSProp, it calculates the uncentered variance of the gradients (without subtracting the mean).
+
+By incorporating both the first moment (mean) and second moment (uncentered variance) of the gradients, Adam optimizer achieves an adaptive learning rate that can efficiently navigate the optimization landscape during training. This adaptivity helps in faster convergence and improved performance of the neural network.\\
+
+While working on our project, we were unsure about which optimizer to utilize as a training algorithm. Nevertheless, for a number of reasons, we concluded that the ADAM optimizer was the best option.
+\begin{itemize}
+	\item Efficiency: Adam is computationally efficient, has little memory requirements and is invariant to diagonal rescale of the gradients.
+	
+	\item Adaptive Learning Rates: Adam adjusts the learning rate throughout training, which can lead to better performance and convergence than methods with a fixed learning rate.
+	
+	\item Suitability for Problems with Noisy or Sparse Gradients: The adaptive nature of Adam makes it well-suited for dealing with noisy problems like text classification, where the data and gradients can be sparse and noisy.
+	
+	\item Robustness: Adam is generally robust to the choice of hyperparameters, though the learning rate might sometimes need to be changed from the default.
+\end{itemize}
+
+Because text data is inherently rough and high-dimensional, Adam offers a dependable and efficient way to navigate the optimization environment while developing a multiclass text classifier. Adam is a good option for our model's optimizer because of his flexibility in adjusting the learning rate to various parameters and his resilience to initial hyperparameter settings. These qualities will accelerate convergence and increase the likelihood of obtaining lower loss values on our classification jobs.\\
+To summarize, the results of the Adam optimizer are generally better than every other optimization algorithm, have faster computation time, and require fewer parameters for tuning. That's why we thought it was the ideal optimizer for our project based on multiclass text classification.\\
+
+\begin{lstlisting}
+# Optimizer as train algorithm
+optimizer = Adam(learning_rate=lr)
+\end{lstlisting}
+\begin{itemize}
+	\item \verb*|optimizer=Adam(learning_rate=lr)|: The Adam class is instantiated with a specific learning rate (lr). The learning rate (lr) is a hyperparameter that controls how much to change the model in response to the estimated error each time the model weights are updated.
+\end{itemize}
+

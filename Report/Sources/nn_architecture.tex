@@ -131,7 +131,8 @@ The Dense layer, or fully connected layer, is the layer where all neurons from t
 Each of these units carries forward the learned patterns to the output layer, which consists of a specified amount of neurons, one for each class. This allows the model to make a decision for each class based on the features extracted throughout the network. The \verb|softmax| activation function then takes these decisions and converts them into probability values, which are easier to interpret. \verb|Softmax| is the appropriate choice for multiclass classification problems because it ensures that the output probabilities are normalized, meaning they sum up to one. This normalization allows for a direct probabilistic interpretation of the model's outputs, enabling the selection of the class with the highest probability as the predicted class label.
 
 The architecture's culmination with a Dense layer and \verb|softmax| activation is a testament to the model's overall design, reflecting a clear pathway from raw text input to a refined set of probabilities indicating class membership. It encapsulates the end-to-end process of feature extraction, transformation, and classification that is fundamental to the success of deep learning models in text classification tasks.
-Below lies a code snippet that shows how the dense layer mentioned above is implemented in our code.
+Below lies a code snippet that shows how the dense layer mentioned above is implemented in our code.\\
+
 \begin{lstlisting}[language=Python]
 model.add(Dense(labels_unique_num, activation='softmax'))	
 \end{lstlisting}
