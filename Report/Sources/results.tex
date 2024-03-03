@@ -32,3 +32,56 @@ Upon evaluating our multiclass text classifier with \verb|category_level_2|, we 
 	\caption{Accuracy with respect to iterations number}
 	\label{fig:epocs_vs_accuracy}
 \end{figure}
+
+As far as the final parameters are concerned, we can not write each and every parameter here. The reason why can be clear once we print some insights about one of our models. After execution, we used \verb|print(model_level_1.summary())| and it returned the following:
+\begin{lstlisting}[language=Python]
+	_________________________________________________________________
+	Layer (type)                Output Shape              Param #   
+	=================================================================
+	embedding_2 (Embedding)     (None, 6544, 17)          2207705   
+	
+	conv1d_2 (Conv1D)           (None, 6533, 512)         104960    
+	
+	global_max_pooling1d_2 (Gl  (None, 512)               0         
+	obalMaxPooling1D)                                               
+	
+	batch_normalization_2 (Bat  (None, 512)               2048      
+	chNormalization)                                                
+	
+	dropout_2 (Dropout)         (None, 512)               0         
+	
+	dense_2 (Dense)             (None, 17)                8721      
+	
+	=================================================================
+	Total params: 2323434 (8.86 MB)
+	Trainable params: 2322410 (8.86 MB)
+	Non-trainable params: 1024 (4.00 KB)
+	_________________________________________________________________
+\end{lstlisting}
+As we can see here, there is no way of printing all of the parameters that models use. Indicatively, some are listed in the table below:
+\begin{table}[htpb]
+	\centering
+	\begin{tblr}{hlines, vlines, colspec={ccc}}
+		\textbf{Layer} &\textbf{Weight/Bias} & \textbf{Value} \\
+		Embedding & $embedding[0][0]$ & $0.01644432$ \\ 
+		Conv & $weight[0][0][0]$ & $-0.04686261$ \\
+		Dense & $weight[0][0]$ & $-0.15257788$ \\
+		Dense & $bias[0]$ & $-0.01133604$ \\
+	\end{tblr}
+	\caption{Weights and biases of some layers}
+\end{table}
+
+\begin{figure}[htpb]
+	\centering
+	\begin{subfigure}{0.48\linewidth}
+		\centering
+		\includegraphics[width=\linewidth]{Images/final_loss_categories.pdf}
+		\caption{}
+	\end{subfigure}
+	\begin{subfigure}{0.48\linewidth}
+		\centering
+		\includegraphics[width=\linewidth]{Images/final_accuracy_categories.pdf}
+		\caption{}
+	\end{subfigure}
+	\caption{}
+\end{figure}
