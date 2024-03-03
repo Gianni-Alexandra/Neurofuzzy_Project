@@ -42,6 +42,12 @@ The embedding layer is a critical component in the neural network architecture, 
 
 From Figure~\ref{fig:nn_architectures}, we can see that embedding layer has been configured with a vocabulary size of $\num{129865}$ and an output dimension of $17$ for \verb|category_level_1| and of $109$ for \verb|category_level_2|. Those numbers are not set by a random factor, but they represent the number of unique labels in each category. By applying this very specific number (\textit{which changes with different input}), we are sure that our model will compute the correct probability distribution output for the given input data. This setup suggests that our model is designed to handle a large corpus with a rich vocabulary, transforming each token into a $x$-dimensional vector. The decision to use such an embedding size balances the need for a nuanced representation of the input text against the computational efficiency of the model. A smaller dimensionality in the embedding space ensures that the model remains computationally tractable, while still allowing for a meaningful representation of words.
 
+\begin{wrapfigure}{r}{0.4\linewidth}
+	\centering
+	\includegraphics[width=\linewidth]{Images/embedding_visualize.png}
+	\caption{Visualization of an embedding layer}
+\end{wrapfigure}
+
 Moreover, the embedding layer is paramount when working with sequences of different lengths. After tokenizing, padding, and converting texts into sequences, the embedding layer takes these sequences as input and provides a uniform output shape, which is essential for the subsequent convolutional layers to function correctly. Unlike one-hot encoded vectors that are sparse and high-dimensional, the dense embeddings can capture more information in a lower-dimensional space.
 
 Thus, by choosing to implement an embedding layer, our model is able to learn an internal representation for the words in the dataset during training. This is advantageous over using pre-trained embeddings when the text data has unique contextual meanings or when the domain-specific vocabulary may not be well-represented by pre-trained word vectors. It allows the model to adapt the word representations to the nuances of the specific dataset and task at hand.
