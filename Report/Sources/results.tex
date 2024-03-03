@@ -9,6 +9,8 @@ history = model.fit(train_texts, train_labels, validation_data=(test_texts, test
 loss, accuracy = model.evaluate(test_texts, test_labels)
 \end{lstlisting}
 
+\subsection{Performance}
+
 The evaluation of our multiclass text classifier has provided insightful observations into its performance, with the network achieving an overall accuracy of around $78\%$ using \verb|category_level_1| labels as shown in Figure~\ref{fig:epoch_vs_accuracy_level_1}.
 This metric signifies that $\approx 3/4$ of the text samples were classified correctly across the various classes.\\
 While this demonstrates a solid foundation in the classifier's ability to discern and categorize text data accurately, it also indicates room for improvement.
@@ -18,8 +20,6 @@ This level of performance sets a benchmark for future iterations of the model, w
 Upon evaluating our multiclass text classifier with \verb|category_level_2|, we observed a marked decrease in performance, with the model achieving an overall accuracy of just $50\%$ as shown in Figure~\ref{fig:epoch_vs_accuracy_level_2}. This stark contrast from the previously discussed accuracy highlights the challenges inherent in text classification tasks, especially when dealing with diverse or more complex label sets. An accuracy of $50\%$ indicates that the classifier struggles significantly to correctly identify the class labels for a majority of the text samples. This performance level suggests that the classifier may be unable to capture the nuances and variations required to distinguish between the classes effectively in this particular label set. Such a result prompts a critical review of the classifier’s design, feature extraction methods, and training process, signaling a need for substantial adjustments to improve its ability to generalize across different sets of labels.
 
 We tried a number of different architectures and parameters, but we were unable to achieve a better outcome. We chose to maintain this architecture as the final one because, of course, there was also a time constraint.
-
-
 
 \begin{figure}[htpb]
 	\centering
@@ -38,6 +38,8 @@ We tried a number of different architectures and parameters, but we were unable 
 	\caption{Accuracy with respect to iterations number}
 	\label{fig:epocs_vs_accuracy}
 \end{figure}
+
+\subsection{Parameters}
 
 As far as the final parameters are concerned, we can not write each and every parameter here. The reason why can be clear once we print some insights about one of our models. After execution, we used \verb|print(model_level_1.summary())| and it returned the following:
 \begin{lstlisting}[language=Python]
@@ -77,6 +79,8 @@ As we can see here, there is no way of printing all of the parameters that model
 	\caption{Weights and biases of some layers}
 \end{table}
 
+\subsection{Metrics}
+
 The final metrics of loss and accuracy, as depicted in Figure \ref{fig:classifier_final_metrics}, provide a clear, comparative view of the text classifier's performance across two different categories. From the visual data, it is apparent that the classifier achieves different levels of success when predicting each category. 
 
 \begin{figure}[htpb]
@@ -101,3 +105,27 @@ The final metrics of loss and accuracy, as depicted in Figure \ref{fig:classifie
 The loss metric, represented in Figure~\ref{fig:classifier_final_loss}, shows a lower value for the first category compared to the second. Since loss measures the model's errors in prediction, a lower loss indicates that the model is more precise in predicting the first category. This suggests that the features of the first category are likely more distinct or that the model has learned patterns that are more representative of this particular category.
 
 Conversely, the accuracy metric, shown in Figure~\ref{fig:classifier_final_accuracy}, demonstrates a higher value for the first category, which implies that the classifier is more often correct when identifying instances of this category. Higher accuracy in this context means that the model has a better grasp of the characteristics that define the first category and is able to generalize well when making predictions on the test data.
+
+\subsection{Training Time}
+
+The training time of a neural network as a function of the size of the input data reflects how algorithm efficiency and computational demand change with increasing data volumes. Generally, as the input data size increases, the training time also increases due to the greater number of computations required. This relationship is crucial for understanding and optimizing the performance and scalability of our algorithm, especially when dealing with large datasets, such as on this project. Efficient data handling and model optimization techniques become essential to manage training time effectively.
+
+We can clearly see from the Figure~\ref{fig:train_time} that the training time for the \verb*|category_level_2| is bigger than the training time of \verb*|category_level_1| and it is due to the higher computational workload \verb*|category_level_2| has to handle.
+
+\begin{figure}[htpb]
+	\centering
+	\includegraphics[width=0.7\textwidth]{Images/train_time_categories.pdf}
+	\caption{Train\_time for both categories}
+	\label{fig:train_time}
+\end{figure} 
+
+\subsection{Inference Time}
+Inference time refers to the duration a machine learning model takes to make predictions on new, unseen data after being trained. Figure~\ref{fig:inference_time} shows detailed analysis and data on how long the neural network model takes to predict outcomes based on new, unseen data. This measurement is critical for assessing the model's efficiency in real-time applications, where faster inference times are crucial for user experience and system performance. We are comparing inference times under different conditions, such as varying input data sizes, model complexities, or computational resources, providing insights into how each factor influences the speed of making predictions.
+Moreover, we can agree that the inference time of \verb*|category_level_2| is much bigger than the one of \verb*|category_level_1|. This happens because the input data sizes and the label sizes are much bigger. 
+
+\begin{figure}[htpb]
+	\centering
+	\includegraphics[width=0.6\textwidth]{Images/eval_inference_time.pdf}
+	\caption{Inference time for both categories}
+	\label{fig:inference_time}
+\end{figure} 
