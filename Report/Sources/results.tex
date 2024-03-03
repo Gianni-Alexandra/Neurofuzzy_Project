@@ -71,17 +71,27 @@ As we can see here, there is no way of printing all of the parameters that model
 	\caption{Weights and biases of some layers}
 \end{table}
 
+The final metrics of loss and accuracy, as depicted in Figure \ref{fig:classifier_final_metrics}, provide a clear, comparative view of the text classifier's performance across two different categories. From the visual data, it is apparent that the classifier achieves different levels of success when predicting each category. 
+
 \begin{figure}[htpb]
 	\centering
 	\begin{subfigure}{0.48\linewidth}
 		\centering
 		\includegraphics[width=\linewidth]{Images/final_loss_categories.pdf}
-		\caption{}
+		\caption{Loss}
+		\label{fig:classifier_final_loss}
 	\end{subfigure}
 	\begin{subfigure}{0.48\linewidth}
 		\centering
 		\includegraphics[width=\linewidth]{Images/final_accuracy_categories.pdf}
-		\caption{}
+		\caption{Accuracy}
+		\label{fig:classifier_final_accuracy}
 	\end{subfigure}
-	\caption{}
+	\caption{Final metrics of our text classifier}
+	\label{fig:classifier_final_metrics}
 \end{figure}
+
+
+The loss metric, represented in Figure~\ref{fig:classifier_final_loss}, shows a lower value for the first category compared to the second. Since loss measures the model's errors in prediction, a lower loss indicates that the model is more precise in predicting the first category. This suggests that the features of the first category are likely more distinct or that the model has learned patterns that are more representative of this particular category.
+
+Conversely, the accuracy metric, shown in Figure~\ref{fig:classifier_final_accuracy}, demonstrates a higher value for the first category, which implies that the classifier is more often correct when identifying instances of this category. Higher accuracy in this context means that the model has a better grasp of the characteristics that define the first category and is able to generalize well when making predictions on the test data.
