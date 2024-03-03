@@ -85,3 +85,27 @@ As we can see here, there is no way of printing all of the parameters that model
 	\end{subfigure}
 	\caption{}
 \end{figure}
+
+\subsection{Training Time}
+
+The training time of a neural network as a function of the size of the input data reflects how algorithm efficiency and computational demand change with increasing data volumes. Generally, as the input data size increases, the training time also increases due to the greater number of computations required. This relationship is crucial for understanding and optimizing the performance and scalability of our algorithm, especially when dealing with large datasets, such as on this project. Efficient data handling and model optimization techniques become essential to manage training time effectively.
+
+We can clearly see from the Figure~\ref{fig:train_time} that the training time for the \verb*|category_level_2| is bigger than the training time of \verb*|category_level_1| and it is due to the higher computational workload \verb*|category_level_2| has to handle.
+
+\begin{figure}[htpb]
+	\centering
+	\includegraphics[width=0.7\textwidth]{Images/train_time_categories.pdf}
+	\caption{Train\_time for both categories}
+	\label{fig:train_time}
+\end{figure} 
+
+\subsection{Inference Time}
+Inference time refers to the duration a machine learning model takes to make predictions on new, unseen data after being trained. Figure~\ref{fig:inference_time} shows detailed analysis and data on how long the neural network model takes to predict outcomes based on new, unseen data. This measurement is critical for assessing the model's efficiency in real-time applications, where faster inference times are crucial for user experience and system performance. We are comparing inference times under different conditions, such as varying input data sizes, model complexities, or computational resources, providing insights into how each factor influences the speed of making predictions.
+Moreover, we can agree that the inference time of \verb*|category_level_2| is much bigger than the one of \verb*|category_level_1|. This happens because the input data sizes and the label sizes are much bigger. 
+
+\begin{figure}[htpb]
+	\centering
+	\includegraphics[width=0.6\textwidth]{Images/eval_inference_time.pdf}
+	\caption{Inference time for both categories}
+	\label{fig:inference_time}
+\end{figure} 

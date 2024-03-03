@@ -21,10 +21,6 @@ To train the model we have made a custom function. This custom training function
 \begin{lstlisting}
 # Train the model
 def train(model, train_texts, train_labels, test_texts, test_labels, batch_size, epochs=40):
-
-history = model.fit(train_texts, train_labels, validation_data=(test_texts, test_labels), epochs=epochs, batch_size=batch_size, use_multiprocessing=True)
-
-return model, history
 \end{lstlisting}
 
 When this train function is called with the appropriate parameters, it will execute the training process, iterating over the training data in mini-batches of size batch\_size for a total of epochs times through the dataset. During each epoch, the model's weights will be updated in an attempt to minimize the loss function, and after every epoch, the model's performance will be evaluated on the test set to monitor its accuracy and generalization capability.
