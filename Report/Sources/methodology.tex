@@ -201,7 +201,7 @@ train_texts, train_labels = ros.fit_resample(train_texts.values.reshape(-1,1), t
 train_texts = pd.Series(train_texts.flatten())
 \end{lstlisting}
 
-However, it's important to note that oversampling can also lead to overfitting since it duplicates the minority class instances. Therefore, it's always a good idea to evaluate the model performance carefully after applying any oversampling technique \cite{test1}.
+However, it's important to note that oversampling can also lead to overfitting since it duplicates the minority class instances. Therefore, it's always a good idea to evaluate the model performance carefully after applying any oversampling technique.
 
 \subsection{Convert to one-hot encoding and Tokenize}
 One of the most crucial preprocessing steps is converting our text data into a format that can be processed by neural networks. This involves two main processes: one-hot encoding and tokenization. Here's an analysis of these steps and how they fit into our project: \\

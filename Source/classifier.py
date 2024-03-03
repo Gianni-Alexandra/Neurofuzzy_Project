@@ -3,6 +3,7 @@ os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'
 
 from import_text import import_text, preprocess_data
 from build_train import build_model, train, evaluate_predict
+import tensorflow as tf
 
 texts, labels_level_1, labels_level_2 = import_text('../news-classification.csv')
 
@@ -15,6 +16,11 @@ print(f'info: Building level 1 neural network!')
 model_level_1 = build_model(0.0015, nunique_words_1, max_length_1, labels_level_1.nunique())
 print(f'info: Building level 2 neural network!')
 model_level_2 = build_model(0.001, nunique_words_2, max_length_2, labels_level_2.nunique())
+
+model_level_1.save('model_level_1.keras')
+model_level_2.save('model_level_2.keras')
+exit()
+
 
 print('info: Training level 1:')
 model_level_1 = train(model_level_1, train_texts_1, train_labels_1, test_texts_1, test_labels_1, batch_size=64, epochs=10)
