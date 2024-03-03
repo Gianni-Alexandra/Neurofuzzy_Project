@@ -7,6 +7,7 @@ from tensorflow.keras.layers import GlobalMaxPooling1D
 from tensorflow.keras import Sequential
 from tensorflow.keras.layers import BatchNormalization
 from tensorflow.keras.layers import Dropout
+from tensorflow.keras.callbacks import TensorBoard
 
 def build_model(lr, num_words, input_length, labels_unique_num):
   model = Sequential()
@@ -23,7 +24,8 @@ def build_model(lr, num_words, input_length, labels_unique_num):
 
 def train(model, train_texts, train_labels, test_texts, test_labels, batch_size, epochs=40):
 	# early_stopping = EarlyStopping(monitor='val_loss', patience=12)
-	model.fit(train_texts, train_labels, validation_data=(test_texts, test_labels), epochs=epochs, batch_size=batch_size, use_multiprocessing=True)
+	tensorboard = TensorBoard(log_dir='logs')
+	model.fit(train_texts, train_labels, validation_data=(test_texts, test_labels), epochs=epochs, batch_size=batch_size, use_multiprocessing=True, callbacks=[tensorboard])
 	return model
 
 def evaluate_predict(model, test_texts, test_labels):
