@@ -60,3 +60,17 @@ The use of $512$ filters within this layer significantly increases the model's c
 
 Furthermore, the choice of the \verb|Leaky ReLU| activation function following the convolutional layer adds an element of non-linearity to the model, allowing for more complex relationships to be learned. \verb|LeakyReLU| is particularly chosen over the standard \verb|ReLU| to mitigate the issue of neurons \say{dying} during training; it allows a small, non-zero gradient when the unit is not active, thus maintaining a gradient flow even for neurons that output negative values. This can lead to more efficient learning and better performance, especially in deeper networks that are prone to saturation and dead neurons.
 
+\subsection{Global Max Pooling 1D}
+Pooling is a technique used in the field of neural networks, particularly in CNNs to reduce the spatial dimensions of the input volume for the next layer in the network. It is a form of downsampling that reduces the number of parameters and computation and helps to achieve spatial invariance to input transformations. However, the pooling layer contains no parameters. Instead, pooling operators are deterministic.\\
+
+Pooling layers typically follow Convolutional Layers and come in different types, with Max Pooling being one of the most common. Max pooling is a deterministic pooling operator that calculates the maximum value in each patch of the feature map. Max Pooling helps in making the detection of features somewhat invariant to scale and orientation changes. It also reduces the computational cost by reducing the number of parameters.\\
+
+Nevertheless, the amount of data that we have in this project is huge. So we must find a faster and less complex method to reduce our computations. That is why we are using Global Max Pooling 1D. Global Max Pooling 1D is a specific type of pooling operation designed for 1-dimensional input, such as in the case of time series data or sequences. Unlike the traditional Max Pooling operation that looks at patches of the input volume, Global Max Pooling operates over the entire length of the input data in each dimension and takes the maximum value over the entire dimension. In other words, The role of Global Max Pooling 1D in this context is to capture the most important feature (the highest value) for each feature map across the entire sequence, which can be especially beneficial for identifying key signals in the text for classification purposes.\\
+By reducing the output of the convolutional layers from a 3D tensor (batch size, sequence length, features) to a 2D tensor (batch size, features) and by capturing the key features each time, Global Max Pooling reduces overfitting. It reduces overfitting by simplifying the model architecture and focusing on the most important features.\\
+
+\begin{lstlisting}
+#Add Global_Max_Pooling Layer
+model.add(GlobalMaxPooling1D())
+\end{lstlisting}
+
+This snippet of code does exactly what we explained. It is adding a \verb*|GlobalMaxPooling1D| layer to the model. This will reduce the output of the previous layer to its maximum value over the time dimension.
