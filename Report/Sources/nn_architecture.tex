@@ -103,3 +103,22 @@ Moreover, the \verb|BatchNormalization| layer is strategically placed. It is pos
 model.add(BatchNormalization())
 \end{lstlisting}
 The snippet above just adds a \verb|BatchNormalization| layer from \verb|tensorflow|'s library.
+
+\subsection{Dropout Layer}
+The Dropout layer is an essential technique in the training of deep neural networks to prevent overfitting. The term overfitting is used in the context of predictive models that are too specific to the training data set and thus learn the scatter of the data along with it. This often happens when the model has too complex a structure for the underlying data or because certain neurons from different layers influence each other.  The problem then is that the trained model generalizes very poorly, i.e., provides inadequate predictions for new, unseen data. The performance on the training data set, on the other hand, was very good, which is why one could assume a high model quality.\\
+With deep neural networks, it can happen that the complex model learns the statistical noise of the training data set and thus delivers good results in training. In the test data set, however, and especially afterwards in the application, this noise is no longer present, and therefore the generalization of the model is very poor.
+\\
+
+However, we do not want to abandon the deep and complex architecture of the network, as this is the only way to learn complex relationships and thus solve difficult problems.\\
+
+This is why we are using a Dropout Layer. The Dropout layer combats this by randomly setting a fraction of the input units to zero at each step during training time, which helps to prevent complex co-adaptations on the training data. It forces the network to learn more robust features that are useful in conjunction with various different random subsets of the other neurons.  Thus, they have no influence on the prediction and also in the backpropagation. \\
+
+In our model, adding \verb*|Dropout(0.2)| means that during training. each input to the Dropout Layer has a $20\%$ chance of being set to zero. Generally, the Dropout rate is set as the percent of the test\_data. In our project, we have set \verb*|test_data=0.2|. Equivalently, the \verb*|dropout_rate=0.2|.\\
+
+\begin{lstlisting}
+# Add Dropout Layer
+model.add(Dropout(0.2))	
+\end{lstlisting}
+
+Dropout is one of the most effective and commonly used regularization techniques to achieve good generalization, which is particularly important in a multiclass classification task where the model must discern between multiple different classes based on the input CSV file.
+Therefore, the use of a Dropout layer aligns with the overall objective of our project to create a robust and accurate multiclass text classifier by leveraging the strengths of neural networks in handling complex patterns in the data while ensuring that the model's performance is not hindered by overfitting.
