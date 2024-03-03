@@ -241,13 +241,48 @@ Here is a brief explaination of the parts of the code:
 	\item \verb*|nunique_words=len(tokenizer.word_index)+1|: This line calculates the total number of unique words in the training texts. The \verb*|word_index| attribute of the tokenizer gives a dictionary of words and their corresponding index. The "+1" is for the out-of-vocabulary words.
 \end{itemize}
 
-\subsection{Convert texts to Sequences}
+\subsection{Convert texts to Sequences and Pad}
 Typically, the tokenization of text data precedes the one-hot encoding of labels in the preprocessing pipeline. The textual content needs to be tokenized and converted into a machine-readable format first, allowing us to establish the structure of our neural network, including the input layer size. Once the text is prepared and the architecture of our CNN is defined, we proceed to convert labels into one-hot encoded vectors, aligning them with the network's output layer for the classification task.
 
-It's important to note that while the tokenization directly impacts the design of our model's input layer, the one-hot encoding of labels is aligned with the output layer. Both steps are crucial for preparing our dataset for training with CNNs in Keras but typically follow the order of tokenizing text data first and then encoding the labels.
+It's important to note that while the tokenization directly impacts the design of our model's input layer, the one-hot encoding of labels is aligned with the output layer. Both steps are crucial for preparing our dataset for training with CNNs in Keras but typically follow the order of tokenizing text data first and then encoding the labels.\\
 
 \begin{lstlisting}
 # Convert texts to sequences
 train_sequences = tokenizer.texts_to_sequences(train_texts)
 test_sequences = tokenizer.texts_to_sequences(test_texts)
 \end{lstlisting}
+
+The \verb*|tokenizer.texts_to_sequences| method transforms each text in the given list of texts to a sequence of integers. It does this by replacing each word in the text by its corresponding integer index based on the word-to-index dictionary that the tokenizer learned when \verb*|fit_on_texts| was called.\\
+
+After that, we pad the sequence so that we can have same length of each sequence. We can also define maximum number of words for each sentence. If a sentence is longer then we can drop some words. \\
+
+Padding is a crucial preprocessing step in the context of machine learning, especially when working with text data or sequences in neural networks. This process involves standardizing the lengths of sequences within a dataset to a specific length to ensure that the input data fed into a model is uniform. The need for padding primarily arises in models that deal with sequential data, Convolutional Neural Networks (CNNs) for NLP tasks, and Transformer models, where the input size needs to be consistent.
+Sequential models process input data in batches for efficiency. Each batch must have a uniform shape, meaning all sequences within a batch must be of the same length. However, natural language data inherently varies in length; sentences and documents can range from a few words to several hundred words. Padding addresses this variability by ensuring that every sequence in a batch conforms to a fixed length.\\
+
+Padding can be applied in two main ways. Pre-padding and Post-padding. Pre-padding is used to add padding tokens, often zeros, at the beginning of the sequences until each sequence reaches the desired length. On the other hand, post-padding is when we add padding tokens at the end of the sequences. On our project we are using the Post-padding.\\
+
+\begin{lstlisting}
+# Get the length of the longest sequence
+max_length = max(len(sequence) for sequence in train_sequences)
+	
+# Pad sequences
+train_padded = pad_sequences(train_sequences, maxlen=max_length, padding='post', truncating='post')
+test_padded = pad_sequences(test_sequences, maxlen=max_length, padding='post', truncating='post')
+\end{lstlisting}
+
+\begin{itemize}
+	\item \verb*|padding="post"|: Add the zeros at the end of the sequence to make the samples in the same size
+	
+	\item \verb*|maxlen=maxlength|: This input defines the maximum number of words among our sentences where the default maximum length of sentences is defined by the longest sentence. When a sentence exceeds the number of max words then it will drop the words and by default setting, it will drop the words at the beginning of the sentence.
+	
+	\item \verb*|truncating="post"|: Setting this truncating parameter as post means that when a sentence exceeds the number of maximum words, drop the last words in the sentence instead of the default setting which drops the words from the beginning of the sentence.
+\end{itemize}
+
+The result of the padding sequences is pretty straight forward. You can now observe that the list of sequences that have been padded out into a matrix where each row in the matrix has an encoded sentence with the same length. Padding ensures that neural networks receive input data in a consistent format, facilitating the training process and improving the ability to learn from variable-length sequences.
+
+
+
+
+
+
+
