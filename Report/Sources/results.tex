@@ -9,13 +9,17 @@ history = model.fit(train_texts, train_labels, validation_data=(test_texts, test
 loss, accuracy = model.evaluate(test_texts, test_labels)
 \end{lstlisting}
 
-The evaluation of our multiclass text classifier has provided insightful observations into its performance, with the network achieving an overall accuracy of around $78\%$ using \verb|category_level_1| labels as shown in Figure~\ref{fig:epocs_vs_accuracy}a.
+The evaluation of our multiclass text classifier has provided insightful observations into its performance, with the network achieving an overall accuracy of around $78\%$ using \verb|category_level_1| labels as shown in Figure~\ref{fig:epoch_vs_accuracy_level_1}.
 This metric signifies that $\approx 3/4$ of the text samples were classified correctly across the various classes.\\
 While this demonstrates a solid foundation in the classifier's ability to discern and categorize text data accurately, it also indicates room for improvement.
 An accuracy of $78\%$ suggests that, although the classifier is generally reliable, there are instances where it may struggle to correctly identify the class labels.
 This level of performance sets a benchmark for future iterations of the model, where enhancements can be targeted towards reducing the classification errors and increasing the accuracy.
 
-Upon evaluating our multiclass text classifier with \verb|category_level_2|, we observed a marked decrease in performance, with the model achieving an overall accuracy of just $50\%$. This stark contrast from the previously discussed accuracy highlights the challenges inherent in text classification tasks, especially when dealing with diverse or more complex label sets. An accuracy of $50\%$ indicates that the classifier struggles significantly to correctly identify the class labels for a majority of the text samples. This performance level suggests that the classifier may be unable to capture the nuances and variations required to distinguish between the classes effectively in this particular label set. Such a result prompts a critical review of the classifier’s design, feature extraction methods, and training process, signaling a need for substantial adjustments to improve its ability to generalize across different sets of labels.
+Upon evaluating our multiclass text classifier with \verb|category_level_2|, we observed a marked decrease in performance, with the model achieving an overall accuracy of just $50\%$ as shown in Figure~\ref{fig:epoch_vs_accuracy_level_2}. This stark contrast from the previously discussed accuracy highlights the challenges inherent in text classification tasks, especially when dealing with diverse or more complex label sets. An accuracy of $50\%$ indicates that the classifier struggles significantly to correctly identify the class labels for a majority of the text samples. This performance level suggests that the classifier may be unable to capture the nuances and variations required to distinguish between the classes effectively in this particular label set. Such a result prompts a critical review of the classifier’s design, feature extraction methods, and training process, signaling a need for substantial adjustments to improve its ability to generalize across different sets of labels.
+
+We tried a number of different architectures and parameters, but we were unable to achieve a better outcome. We chose to maintain this architecture as the final one because, of course, there was also a time constraint.
+
+
 
 \begin{figure}[htpb]
 	\centering
@@ -23,11 +27,13 @@ Upon evaluating our multiclass text classifier with \verb|category_level_2|, we 
 		\centering
 		\includegraphics[width=\linewidth]{Images/level_1_epoch_accuracy.pdf}
 		\caption{\textit{category\_level\_1}}
+		\label{fig:epoch_vs_accuracy_level_1}
 	\end{subfigure}
 	\begin{subfigure}{0.48\linewidth}
 		\centering
 		\includegraphics[width=\linewidth]{Images/level_2_epoch_accuracy.pdf}
 		\caption{\textit{category\_level\_2}}
+		\label{fig:epoch_vs_accuracy_level_2}
 	\end{subfigure}
 	\caption{Accuracy with respect to iterations number}
 	\label{fig:epocs_vs_accuracy}
