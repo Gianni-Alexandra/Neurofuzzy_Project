@@ -83,12 +83,13 @@ The rest of the columns are not necessary because they do not give us some kind 
 As we are using Python for this project, in order to load this CSV file into memory, we used \verb|pandas|'s \verb|read_csv()| function that automatically imports the necessary file to a \verb|Dataframe| format.\\
 
 \begin{lstlisting}
+# Import text from CSV file
+def import_text(fname, content_name='content', label_level_1_name='category_level_1', label_level_2_name='category_level_2'):
 df = pd.read_csv(fname)
-texts = df['content'].apply(clean_text)
-label_level1 = df['category_level_1']
-label_level2 = df['category_level_2']
-	
-return texts, label_level1, label_level2
+texts = df[content_name].apply(clean_text)
+labels_level_1 = df[label_level_1_name]
+labels_level_2 = df[label_level_2_name]
+return texts, labels_level_1, labels_level_2
 \end{lstlisting}
 
 \subsection{Data Cleaning}
@@ -116,22 +117,15 @@ This reduction in dataset size not only streamlines the computational process by
 \begin{lstlisting}
 def clean_text(text):
 text = text.lower()
-text = text.replace('\xa0', ' ')  # Remove non-breaking spaces 
-text = re.sub(r'http\S+|www.\S+', '', text)  # Remove URLs
-text = re.sub(r'\S+@\S+', '', text)    # Remove email addresses
-text = re.sub(r'\n', ' ', text)  # Replace newline characters with space 
-text = re.sub(r'^.*\b(this|post|published|site)\b.*$\n?', '', text, flags=re.MULTILINE)    # Remove lines like 'This post was published on the site'
-text = re.sub(r'\\(?!n|r)', '', text)   # Remove anything but backslashes
-text = text.replace('[\r \n]\n', ' ')   # Remove newlines 
-text = re.sub(r'[\r\n]{2,}', ' ', text)
-text = re.sub(r'from[: ]* ', '', text) # Remove 'from' at the beginning of the text
-text = re.sub(r'  ', ' ', text) # Remove double spaces 
-text = re.sub(r'\(photo by .*\)', '', text) # Remove lines like '(photo by reuters)' 
+text = text.replace('\xa0', ' ') # Remove non-breaking spaces EDO
+text = re.sub(r'http\S+|www.\S+', '', text) # Remove URLs
+text = re.sub(r'\S+@\S+', '', text) # Remove email addresses
+text = text.replace('[\r \n]\n', ' ') # Remove newlines  EDO
 
-words = text.split()
+words = text.split() # Remove stopwords
 filtered_words = [word for word in words if word not in stop_words]
 text = ' '.join(filtered_words)
-	
+
 return text
 \end{lstlisting}
 
@@ -204,14 +198,56 @@ train_texts = pd.Series(train_texts.flatten())
 However, it's important to note that oversampling can also lead to overfitting since it duplicates the minority class instances. Therefore, it's always a good idea to evaluate the model performance carefully after applying any oversampling technique.
 
 \subsection{Convert to one-hot encoding and Tokenize}
-One of the most crucial preprocessing steps is converting our text data into a format that can be processed by neural networks. This involves two main processes: one-hot encoding and tokenization. Here's an analysis of these steps and how they fit into our project: \\
+For a multiclass classification problem, one-hot encoding of labels is a crucial preprocessing step. This process converts categorical labels into a binary matrix representation that is more suitable for training neural network models.
+In the context of our project where we have multiple classes, each label associated with our text data needs to be represented in a way that the neural network can effectively interpret and learn from.
 
-One-Hot encoding is a process of converting categorical data variables so they can be provided to machine learning algorithms to improve predictions. With one-hot, we convert each categorical value into a new categorical column and assign a binary value of 1 or 0. Each integer value is represented as a binary vector. One-hot encoding can be applied to text data to turn every word into a distinct vector. This is helpful because neural networks need numerical input and cannot comprehend text directly. Your text data can be efficiently converted into a format that your CNN can understand by one-hot encoding.
-One-hot encoding, however, produces high-dimensional vectors, which can be sparse and ineffective, particularly for large vocabularies (with dimensions equal to the size of your vocabulary). This is a simple way to represent your text data, but it may not be the most memory-efficient method.
+This involves two main processes: one-hot encoding and tokenization. One-hot encoding and tokenization are closely interconnected steps in the preprocessing pipeline for textual data, especially in the context of machine learning and natural language processing (NLP). To understand their connection, it's essential to break down the roles they play in preparing text data for modeling: \\
+
+One-Hot encoding is a process that transforms each label into a vector of length equal to the number of classes, where the index corresponding to the label is marked with a 1, and all other indices are set to 0. This step is essential because CNNs and other neural networks output a vector of probabilities across the classes for each input sample during training and inference. The one-hot encoded labels thus directly correspond to the network's output layer, facilitating the calculation of loss and the backpropagation of errors to train the model.
 \\
 
 Text Tokenization is a data preprocessing technique of converting a separate piece of text
 into smaller parts like words, phrases, or any other meaningful elements called tokens
-which makes counting the number of words in the text easier. The proposed system
-performed tokenization at the word level so as to consider the sentiment polarity of
-each word.
+which makes counting the number of words in the text easier. This step is fundamental before any text can be processed by a neural network, because models do not understand raw text but can work with numerical data. Each token obtained from the text is mapped to a unique integer, creating a numerical representation of the text that can be fed into the model. The Tokenizer API from TensorFlow Keras can split sentences into words and encode them into integers.\\
+
+\begin{lstlisting}
+# Convert labels to one-hot encoding
+encoder = LabelEncoder()
+encoder.fit(labels)
+train_labels = to_categorical(encoder.transform(train_labels), num_classes=labels.nunique())
+test_labels  = to_categorical(encoder.transform(test_labels), num_classes=labels.nunique())
+
+# Tokenize 	
+tokenizer = Tokenizer(oov_token="<OOV>")
+tokenizer.fit_on_texts(train_texts)
+	
+nunique_words = len(tokenizer.word_index) +1
+\end{lstlisting}
+
+Here is a brief explaination of the parts of the code:
+\begin{itemize}
+	\item \verb*|encoder=LabelEncoder()|: This line initializes a \verb*|LabelEncoder| object. is a utility class to help normalize labels such that they contain only values between $0$ and \verb*|n_classes-1|.
+	
+	\item \verb*|encoder.fit(labels)|: This line fits the encoder on the labels. This means it finds all unique class labels.
+	
+	\item \verb*|train_labels=to_categorical(...)|: This line first transforms the labels to normalized encoding, then converts the vector of class integers into a binary matrix representation (one-hot encoding). The number of classes \verb*|(num_classes)| is determined by the number of unique values in the labels.
+	
+	\item \verb*|test_labels=to_categorical(...)|:  This line does the same for the test labels
+	
+	\item \verb*|tokenizer=Tokenizer(oov_token="<OOV>")|: This line initializes a \verb*|Tokenizer| object. The tokenizer allows to vectorize a text corpus, by turning each text into a sequence of integers. The "\verb*|<00V>|" parameter is used to handle out-of-vocabulary words during \verb*|text_to_sequence| calls.
+	
+	\item \verb*|tokenizer.fit_on_texts(train_texts)|: This line fits the tokenizer on the training texts. This updates internal vocabulary based on a list of texts. This method creates the vocabulary index based on word frequency.
+	
+	\item \verb*|nunique_words=len(tokenizer.word_index)+1|: This line calculates the total number of unique words in the training texts. The \verb*|word_index| attribute of the tokenizer gives a dictionary of words and their corresponding index. The "+1" is for the out-of-vocabulary words.
+\end{itemize}
+
+\subsection{Convert texts to Sequences}
+Typically, the tokenization of text data precedes the one-hot encoding of labels in the preprocessing pipeline. The textual content needs to be tokenized and converted into a machine-readable format first, allowing us to establish the structure of our neural network, including the input layer size. Once the text is prepared and the architecture of our CNN is defined, we proceed to convert labels into one-hot encoded vectors, aligning them with the network's output layer for the classification task.
+
+It's important to note that while the tokenization directly impacts the design of our model's input layer, the one-hot encoding of labels is aligned with the output layer. Both steps are crucial for preparing our dataset for training with CNNs in Keras but typically follow the order of tokenizing text data first and then encoding the labels.
+
+\begin{lstlisting}
+# Convert texts to sequences
+train_sequences = tokenizer.texts_to_sequences(train_texts)
+test_sequences = tokenizer.texts_to_sequences(test_texts)
+\end{lstlisting}
