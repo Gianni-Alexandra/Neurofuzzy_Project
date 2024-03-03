@@ -52,6 +52,16 @@ Moreover, the embedding layer is paramount when working with sequences of differ
 
 Thus, by choosing to implement an embedding layer, our model is able to learn an internal representation for the words in the dataset during training. This is advantageous over using pre-trained embeddings when the text data has unique contextual meanings or when the domain-specific vocabulary may not be well-represented by pre-trained word vectors. It allows the model to adapt the word representations to the nuances of the specific dataset and task at hand.
 
+Below is the code we wrote to add an embedding layer in our system.
+\begin{lstlisting}[language=Python]
+model = Sequential()
+model.add(Embedding(input_dim=int(num_words), output_dim=labels_unique_num, input_length=input_length))
+\end{lstlisting}
+
+\begin{itemize}
+	\item Using \verb|Sequential()| in our code means that all layers we will add later are going to be sequential ones.
+	\item \verb|Embedding()| is the actual layer that is mentioned above. We can see here that it has as input dimension the total number of \verb|num_words| of the \textit{train} dataset, for output dimension the unique labels number and for input length the maximum sentence length of the dataset.
+\end{itemize}
 
 \subsection{Conv1D Layer}
 The inclusion of a convolutional layer with a kernel size of $20$ and $512$ filters in the neural network architecture is a calculated choice tailored for the demands of text classification tasks. The kernel size, or filter size, determines the width of the convolution window that scans across the input data. In this case, a kernel size of $20$ allows the model to examine twenty adjacent words at a time, enabling the capture of context within these word sequences. This can be particularly effective for recognizing patterns or features in text that span multiple words, such as phrases or specific syntactic constructions, which are often pivotal for understanding the overall meaning and sentiment of the text.
@@ -59,6 +69,13 @@ The inclusion of a convolutional layer with a kernel size of $20$ and $512$ filt
 The use of $512$ filters within this layer significantly increases the model's capacity to extract features. Each filter can be thought of as a feature detector, looking for different types of patterns in the text. With $512$ filters, the network is well-equipped to identify a wide array of textual features, making it robust in the face of the complexity and variability inherent in natural language. This high number of filters is indicative of the model's deep architecture, designed to handle the intricate task of classifying texts into multiple categories, where a nuanced understanding of the language is crucial.
 
 Furthermore, the choice of the \verb|Leaky ReLU| activation function following the convolutional layer adds an element of non-linearity to the model, allowing for more complex relationships to be learned. \verb|LeakyReLU| is particularly chosen over the standard \verb|ReLU| to mitigate the issue of neurons \say{dying} during training; it allows a small, non-zero gradient when the unit is not active, thus maintaining a gradient flow even for neurons that output negative values. This can lead to more efficient learning and better performance, especially in deeper networks that are prone to saturation and dead neurons.
+\begin{lstlisting}{language=Python}
+model.add(Conv1D(512, 20, activation=LeakyReLU(alpha=0.01)))
+\end{lstlisting}
+	
+\begin{itemize}
+	\item \verb|LeakyReLU| is used as activation layer here with $\alpha=0.01$. Initially, we made use of the classic \verb|ReLU| but we wanted to be sure that dead neurons will not be a problem for our case.
+\end{itemize}
 
 \subsection{Global Max Pooling 1D}
 Pooling is a technique used in the field of neural networks, particularly in CNNs to reduce the spatial dimensions of the input volume for the next layer in the network. It is a form of downsampling that reduces the number of parameters and computation and helps to achieve spatial invariance to input transformations. However, the pooling layer contains no parameters. Instead, pooling operators are deterministic.\\
@@ -74,3 +91,6 @@ model.add(GlobalMaxPooling1D())
 \end{lstlisting}
 
 This snippet of code does exactly what we explained. It is adding a \verb*|GlobalMaxPooling1D| layer to the model. This will reduce the output of the previous layer to its maximum value over the time dimension.
+
+
+\subsection{Batch Normalization}
