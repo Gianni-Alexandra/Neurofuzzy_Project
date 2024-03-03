@@ -94,3 +94,12 @@ This snippet of code does exactly what we explained. It is adding a \verb*|Globa
 
 
 \subsection{Batch Normalization}
+Batch Normalization is an excellent layer that significantly lowers our neural network's overall complexity \cite{ioffe2015batch}.
+This layer standardizes the inputs to a layer for each mini-batch, stabilizing the learning process. By normalizing the features to have a mean of zero and a standard deviation of one, it ensures that no particular feature dominates the gradient updates during training, which can lead to faster convergence. This is particularly beneficial after pooling layers (\textit{just as we did here}), as the aggregation can sometimes lead to a shift in the distribution of the pooled features.
+
+Moreover, the \verb|BatchNormalization| layer is strategically placed. It is positioned soon following pooling to ensure that activations sent into succeeding layers support good gradient flow and promptly address any potential distribution shifts resulting from the pooling procedure. In this setup, the BatchNormalization layer serves as a regulatory checkpoint in the network, guaranteeing that the feature representations retain favorable attributes that promote effective learning.
+
+\begin{lstlisting}[language=Python]
+model.add(BatchNormalization())
+\end{lstlisting}
+The snippet above adds just adds a \verb|BatchNormalization| layer from \verb|tensorflow|'s library.
