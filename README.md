@@ -1,4 +1,4 @@
-### News Text Classification with Neural Networks
+#### News Text Classification with Neural Networks
 
 ## Project Overview
 The goal of this project is to build a classifier capable of categorizing short news articles into hierarchical categories using a neural network model.
